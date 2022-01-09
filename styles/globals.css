@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#toggle-switch::after {
+    content: '';
+    @apply absolute top-0 left-0 w-4 h-4 transition duration-200 transform scale-75 rounded-full bg-neutral-100;
+}
+
+#toggle-switch:checked::after {
+    @apply transform scale-75 translate-x-4;
+}
+
+#checkbox::after {
+    content: '✔';
+    @apply absolute transition duration-200 scale-75 -translate-x-1/2 -translate-y-1/2 opacity-0 top-1/2 left-1/2;
+}
+
+#checkbox:checked:after {
+    content: '✔';
+    @apply opacity-100 text-neutral-100;
+}

@@ -1,0 +1,76 @@
+module.exports = {
+  mode: 'jit',
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+    colors: {
+      transparent: 'transparent',
+      current: 'currentColor',
+      'white': '#FFFFFF',
+      'black': '#000000',
+      'neutral': {
+        100: '#E8E8E8',
+        200: '#D1D1D1',
+        300: '#BABABA',
+        400: '#A3A3A3',
+        500: '#8C8C8C',
+        600: '#747474',
+        700: '#5D5D5D',
+        800: '#464646',
+        900: '#2F2F2F',
+        1000: '#181818',
+      },
+      'primary': {
+        100: '#66C0B8',
+        200: '#4DB6AC',
+        300: '#33ABA0',
+        400: '#1AA194',
+        500: '#009688',
+      },
+      'secondary': {
+        100: '#8EA0F5',
+        200: '#7B90F3',
+        300: '#6981F1',
+        400: '#5671F0',
+        500: '#4361EE',
+      },
+      'info': {
+        100: '#7AC0F8',
+        200: '#64B6F7',
+        300: '#4DABF5',
+        400: '#37A1F4',
+        500: '#2196F3',
+      },
+      'success': {
+        100: '#76D7C4',
+        200: '#5FD0BA',
+        300: '#48C9B0',
+        400: '#31C3A6',
+        500: '#1ABC9C',
+      },
+      'warning': {
+        100: '#EEC68C',
+        200: '#EBBD79',
+        300: '#E8B365',
+        400: '#E5AA52',
+        500: '#E2A03F',
+      },
+      'danger': {
+        100: '#F1979C',
+        200: '#EE858C',
+        300: '#EC747B',
+        400: '#E9626B',
+        500: '#E7515A',
+      },
+    },
+    fontFamily: {
+      sans: ['Nunito', 'sans-serif'],
+    },
+  },
+  plugins: [
+    require('tailwind-scrollbar-hide'),
+  ],
+}
