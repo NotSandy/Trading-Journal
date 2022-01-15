@@ -6,8 +6,9 @@ import {
   AtSymbolIcon,
 } from "@heroicons/react/outline";
 import Checkbox from "../../components/ui/Checkbox";
+import Link from "next/link";
 
-const register = () => {
+const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const showPasswordHandler = () => {
@@ -28,12 +29,11 @@ const register = () => {
               <p className="pr-2 text-md text-neutral-100">
                 Already have an account?
               </p>
-              <a
-                href="/auth/login"
-                className="underline text-md text-primary-500 underline-offset-4"
-              >
-                Login
-              </a>
+              <Link href="/auth/login">
+                <a className="underline text-md text-primary-500 underline-offset-4">
+                  Login
+                </a>
+              </Link>
             </div>
             <form className="flex flex-col items-center w-full">
               <div className="relative w-full mb-8">
@@ -73,7 +73,7 @@ const register = () => {
                 />
               </div>
               <div className="flex mt-4">
-                <Checkbox text="I agree to the" handler='placeholder' />
+                <Checkbox text="I agree to the" handler={showPasswordHandler} />
                 <a className="pl-1 text-primary-100 text-md" href="#">
                   terms and conditions
                 </a>
@@ -102,4 +102,4 @@ const register = () => {
   );
 };
 
-export default register;
+export default Register;
