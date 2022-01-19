@@ -21,3 +21,7 @@
     content: '✔';
     @apply opacity-100 text-neutral-100;
 }
+
+body {
+    @apply bg-neutral-1000 scrollbar-hide;
+}

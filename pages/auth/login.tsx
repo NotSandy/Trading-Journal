@@ -70,7 +70,7 @@ const Login = ({
                   width={24}
                   height={24}
                 />
-                <p>Login with Email</p>
+                <span>Login with Email</span>
               </button>
             </form>
             <div className="flex justify-center my-8">

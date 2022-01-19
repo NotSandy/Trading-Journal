@@ -5,7 +5,6 @@ import {
   EyeIcon,
   AtSymbolIcon,
 } from "@heroicons/react/outline";
-import Checkbox from "../../components/ui/Checkbox";
 import Link from "next/link";
 
 const Register = () => {
@@ -73,7 +72,6 @@ const Register = () => {
                 />
               </div>
               <div className="flex mt-4">
-                <Checkbox text="I agree to the" handler={showPasswordHandler} />
                 <a className="pl-1 text-primary-100 text-md" href="#">
                   terms and conditions
                 </a>

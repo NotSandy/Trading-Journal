@@ -30,7 +30,7 @@ const SocialLoginButton: NextPage<Props> = ({
           width={24}
           height={24}
         />
-        <p>Login with {providerName}</p>
+        <span>Login with {providerName}</span>
       </button>
     </div>
   );

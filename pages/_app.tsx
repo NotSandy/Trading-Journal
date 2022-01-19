@@ -16,9 +16,9 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
   // Use the layout defined at the page level, if available
   const getLayout = Component.getLayout ?? ((page: ReactNode) => page);
 
-  return getLayout(
+  return (
     <SessionProvider session={pageProps.session}>
-      <Component {...pageProps} />
+      {getLayout(<Component {...pageProps} />)}
     </SessionProvider>
   );
 };

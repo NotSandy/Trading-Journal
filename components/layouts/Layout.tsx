@@ -13,7 +13,7 @@ const Layout = ({ children }: { children: any }) => {
     <React.Fragment>
       <Header openNav={openNavHandler} />
       <Navbar active={openNav} />
-      <main>{children}</main>
+      <main className="min-h-screen px-8 pt-24 pb-16 overflow-hidden md:pl-24">{children}</main>
       <Footer />
     </React.Fragment>
   );
