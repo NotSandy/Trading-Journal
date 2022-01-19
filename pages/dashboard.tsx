@@ -21,7 +21,7 @@ const Dashboard = () => {
             <span className="text-lg font-semibold text-neutral-100">Welcome back to Trade Journal!</span>
           </div>
           <div className="p-4">
-            <div className="flex flex-col">
+            <div className="flex flex-col sm:flex-row">
               <div className="w-16 h-16 border-4 rounded-full border-neutral-900">
                 <Image
                   src={`${session?.user?.image}`}
