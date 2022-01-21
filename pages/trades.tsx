@@ -6,70 +6,178 @@ import TradesTable, {
   SelectColumnFilter,
 } from "../components/widgets/TradesTable";
 
+// <th className="px-6 py-3 text-left">Date</th>
+// <th className="px-6 py-3 text-left">Ticker</th>
+// <th className="px-6 py-3 text-left">Expiry</th>
+// <th className="px-6 py-3 text-left">Strike</th>
+// <th className="px-6 py-3 text-left">Srategy</th>
+// <th className="px-6 py-3 text-left">Quantity</th>
+// <th className="px-6 py-3 text-left">Entry</th>
+// <th className="px-6 py-3 text-left">Exit</th>
+// <th className="px-6 py-3 text-left">Premium</th>
+// <th className="px-6 py-3 text-left">Return</th>
+// <th className="px-6 py-3 text-left">Return %</th>
+// <th className="px-6 py-3 text-left">Status</th>
+
 const getData = () => {
   const data = [
     {
-      name: "Jane Cooper",
-      email: "jane.cooper@example.com",
-      title: "Regional Paradigm Technician",
-      department: "Optimization",
-      status: "Active",
-      role: "Admin",
-      imgUrl:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60",
+      date: "01/20/2022",
+      ticker: "TSLA",
+      expiry: "01/21/2022",
+      strike: "$1000",
+      strategy: "Call",
+      quantity: "1",
+      entry: "5.00",
+      exit: "10.00",
+      premium: "$300",
+      return: "$500",
+      return_percent: "100%",
+      status: "Win",
+      notes: "Harry's signal",
     },
     {
-      name: "Cody Fisher",
-      email: "cody.fisher@example.com",
-      title: "Product Directives Officer",
-      department: "Intranet",
-      status: "Active",
-      role: "Owner",
-      imgUrl:
-        "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60",
+      date: "01/20/2022",
+      ticker: "TSLA",
+      expiry: "01/21/2022",
+      strike: "$1000",
+      strategy: "Call",
+      quantity: "1",
+      entry: "5.00",
+      exit: "10.00",
+      premium: "$300",
+      return: "$500",
+      return_percent: "100%",
+      status: "Win",
     },
     {
-      name: "Esther Howard",
-      email: "esther.howard@example.com",
-      title: "Forward Response Developer",
-      department: "Directives",
-      status: "Active",
-      role: "Member",
-      imgUrl:
-        "https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60",
+      date: "01/20/2022",
+      ticker: "TSLA",
+      expiry: "01/21/2022",
+      strike: "$1000",
+      strategy: "Call",
+      quantity: "1",
+      entry: "5.00",
+      exit: "10.00",
+      premium: "$300",
+      return: "$500",
+      return_percent: "100%",
+      status: "Win",
     },
     {
-      name: "Jenny Wilson",
-      email: "jenny.wilson@example.com",
-      title: "Central Security Manager",
-      department: "Program",
-      status: "Active",
-      role: "Member",
-      imgUrl:
-        "https://images.unsplash.com/photo-1498551172505-8ee7ad69f235?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60",
+      date: "01/20/2022",
+      ticker: "TSLA",
+      expiry: "01/21/2022",
+      strike: "$1000",
+      strategy: "Call",
+      quantity: "1",
+      entry: "5.00",
+      exit: "10.00",
+      premium: "$300",
+      return: "$500",
+      return_percent: "100%",
+      status: "Win",
     },
     {
-      name: "Kristin Watson",
-      email: "kristin.watson@example.com",
-      title: "Lean Implementation Liaison",
-      department: "Mobility",
-      status: "Active",
-      role: "Admin",
-      imgUrl:
-        "https://images.unsplash.com/photo-1532417344469-368f9ae6d187?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60",
+      date: "01/20/2022",
+      ticker: "TSLA",
+      expiry: "01/21/2022",
+      strike: "$1000",
+      strategy: "Call",
+      quantity: "1",
+      entry: "5.00",
+      exit: "10.00",
+      premium: "$300",
+      return: "$500",
+      return_percent: "100%",
+      status: "Win",
     },
     {
-      name: "Cameron Williamson",
-      email: "cameron.williamson@example.com",
-      title: "Internal Applications Engineer",
-      department: "Security",
-      status: "Active",
-      role: "Member",
-      imgUrl:
-        "https://images.unsplash.com/photo-1566492031773-4f4e44671857?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60",
+      date: "01/20/2022",
+      ticker: "TSLA",
+      expiry: "01/21/2022",
+      strike: "$1000",
+      strategy: "Call",
+      quantity: "1",
+      entry: "5.00",
+      exit: "10.00",
+      premium: "$300",
+      return: "$500",
+      return_percent: "100%",
+      status: "Win",
+    },
+    {
+      date: "01/20/2022",
+      ticker: "TSLA",
+      expiry: "01/21/2022",
+      strike: "$1000",
+      strategy: "Call",
+      quantity: "1",
+      entry: "5.00",
+      exit: "10.00",
+      premium: "$300",
+      return: "$500",
+      return_percent: "100%",
+      status: "Win",
+    },
+    {
+      date: "01/20/2022",
+      ticker: "TSLA",
+      expiry: "01/21/2022",
+      strike: "$1000",
+      strategy: "Call",
+      quantity: "1",
+      entry: "5.00",
+      exit: "10.00",
+      premium: "$300",
+      return: "$500",
+      return_percent: "100%",
+      status: "Win",
+    },
+    {
+      date: "01/20/2022",
+      ticker: "TSLA",
+      expiry: "01/21/2022",
+      strike: "$1000",
+      strategy: "Call",
+      quantity: "1",
+      entry: "5.00",
+      exit: "10.00",
+      premium: "$300",
+      return: "$500",
+      return_percent: "100%",
+      status: "Win",
+    },
+    {
+      date: "01/20/2022",
+      ticker: "TSLA",
+      expiry: "01/21/2022",
+      strike: "$1000",
+      strategy: "Call",
+      quantity: "1",
+      entry: "5.00",
+      exit: "10.00",
+      premium: "$300",
+      return: "$500",
+      return_percent: "100%",
+      status: "Win",
+    },
+    {
+      date: "01/20/2022",
+      ticker: "TSLA",
+      expiry: "01/21/2022",
+      strike: "$1000",
+      strategy: "Call",
+      quantity: "1",
+      entry: "5.00",
+      exit: "10.00",
+      premium: "$300",
+      return: "$500",
+      return_percent: "100%",
+      status: "Win",
     },
   ];
-  return [...data, ...data, ...data];
+  return [...data];
 };
 
 const Trades = () => {
@@ -78,22 +186,62 @@ const Trades = () => {
   const columns = React.useMemo(
     () => [
       {
-        Header: "Name",
-        accessor: "name",
+        Header: "Date",
+        accessor: "date",
       },
       {
-        Header: "Title",
-        accessor: "title",
+        Header: "Ticker",
+        accessor: "ticker",
+        Filter: SelectColumnFilter,
+        filter: "includes",
+      },
+      {
+        Header: "Expiry",
+        accessor: "expiry",
+      },
+      {
+        Header: "Strike",
+        accessor: "strike",
+      },
+      {
+        Header: "Strategy",
+        accessor: "strategy",
+        Filter: SelectColumnFilter,
+        filter: "includes",
+      },
+      {
+        Header: "Quantity",
+        accessor: "quantity",
+      },
+      {
+        Header: "Entry",
+        accessor: "entry",
+      },
+      {
+        Header: "Exit",
+        accessor: "exit",
+      },
+      {
+        Header: "Premium",
+        accessor: "premium",
+      },
+      {
+        Header: "Return",
+        accessor: "return",
+      },
+      {
+        Header: "Return%",
+        accessor: "return_percent",
       },
       {
         Header: "Status",
         accessor: "status",
-      },
-      {
-        Header: "Role",
-        accessor: "role",
         Filter: SelectColumnFilter,
         filter: "includes",
+      },
+      {
+        Header: "Notes",
+        accessor: "notes",
       },
     ],
     []
