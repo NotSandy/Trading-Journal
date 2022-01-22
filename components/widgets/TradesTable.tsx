@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-key */
 import { NextPage } from "next";
-import React from "react";
+import React, { Fragment, MutableRefObject } from "react";
 import Image from "next/image";
 import {
   useTable,
@@ -9,6 +9,7 @@ import {
   useFilters,
   useSortBy,
   usePagination,
+  useRowSelect,
 } from "react-table";
 import {
   ChevronDoubleLeftIcon,
@@ -21,6 +22,7 @@ import {
   SearchCircleIcon,
 } from "@heroicons/react/outline";
 import { Button, PageButton } from "../ui/Button";
+import { useRouter } from "next/router";
 
 interface Props {
   columns: any;
@@ -45,10 +47,10 @@ function GlobalFilter({
   return (
     <label className="flex items-baseline gap-x-2">
       <div className="relative w-full">
-        <SearchCircleIcon className="absolute w-8 h-8 top-2 text-primary-500" />
+        <SearchCircleIcon className="absolute w-8 h-8 top-2 left-2 text-primary-500" />
         <input
           type="text"
-          className="w-full h-12 pl-12 tracking-widest transition duration-500 bg-transparent border-0 border-b-2 outline-none placeholder-opacity-80 border-b-neutral-800 placeholder-neutral-100 text-primary-500 focus:border-b-primary-500 selection:text-secondary-500"
+          className="w-full h-12 pl-12 tracking-widest placeholder-opacity-75 transition duration-500 border-0 rounded-full outline-none bg-neutral-900 border-b-neutral-800 placeholder-neutral-100 text-primary-500 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 selection:text-secondary-500 "
           value={value || ""}
           onChange={(e) => {
             setValue(e.target.value);
@@ -72,7 +74,7 @@ export function SelectColumnFilter({
     render: any;
   };
 }) {
-  const options = React.useMemo(() => {
+  const options = React.useMemo<any>(() => {
     const options = new Set();
     preFilteredRows.forEach((row: any) => {
       options.add(row.values[id]);
@@ -84,7 +86,7 @@ export function SelectColumnFilter({
     <label className="flex items-baseline gap-x-2">
       <span className="text-neutral-100 basis-1/3">{render("Header")}: </span>
       <select
-        className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+        className="block w-full transition duration-500 border-0 rounded-md shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 bg-neutral-900 text-neutral-100"
         name={id}
         id={id}
         value={filterValue}
@@ -93,7 +95,7 @@ export function SelectColumnFilter({
         }}
       >
         <option value="">All</option>
-        {options.map((option, i) => (
+        {options.map((option: any, i: any) => (
           <option key={i} value={option}>
             {option}
           </option>
@@ -102,6 +104,31 @@ export function SelectColumnFilter({
     </label>
   );
 }
+
+const IndeterminateCheckbox = React.forwardRef(
+  ({ indeterminate, ...rest }: { indeterminate?: any }, ref) => {
+    const defaultRef = React.useRef<any>();
+    const resolvedRef = ref || defaultRef;
+
+    React.useEffect(() => {
+      (resolvedRef as MutableRefObject<any>).current.indeterminate =
+        indeterminate;
+    }, [resolvedRef, indeterminate]);
+
+    return (
+      <div>
+        <input
+          className="transition duration-200 border-0 bg-neutral-900 focus:outline-none focus:ring-0 focus:border-0 text-primary-500 focus:ring-offset-0"
+          type="checkbox"
+          ref={resolvedRef as MutableRefObject<any>}
+          {...rest}
+        />
+      </div>
+    );
+  }
+);
+
+IndeterminateCheckbox.displayName = "IndeterminateCheckbox";
 
 const TradesTable: NextPage<Props> = ({ columns, data }) => {
   const {
@@ -129,21 +156,54 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
     useGlobalFilter,
     useFilters,
     useSortBy,
-    usePagination
+    usePagination,
+    useRowSelect,
+    (hooks) => {
+      hooks.visibleColumns.push((columns) => [
+        {
+          id: "selection",
+          Header: ({ getToggleAllPageRowsSelectedProps }) => (
+            <div>
+              <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
+            </div>
+          ),
+          Cell: ({ row }) => (
+            <div>
+              <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+            </div>
+          ),
+        },
+        ...columns,
+      ]);
+    }
   );
+
+  const router = useRouter();
 
   return (
     <div className="relative overflow-hidden rounded-md bg-neutral-800">
       <div className="flex justify-between bg-primary-500">
-        <span className="p-4 mb-8 text-lg font-semibold text-neutral-100">
-          Your Trades
-        </span>
+        <div className="flex flex-col justify-between p-4">
+          <span className="text-lg font-semibold text-neutral-100">
+            Your Trades
+          </span>
+          <Button
+            className=""
+            disabled={false}
+            onClick={(e: any) => {
+              e.preventDefault();
+              router.push("/add-trade");
+            }}
+          >
+            Add Trade
+          </Button>
+        </div>
         <div className="relative w-32 h-32 mr-4">
           <Image src="/assets/undraw/data.svg" alt="Email" layout="fill" />
         </div>
       </div>
       <div className="p-4">
-        <div className="pb-4 sm:flex sm:gap-x-2">
+        <div className="pb-4 sm:flex sm:space-x-2">
           <GlobalFilter
             preGlobalFilteredRows={preGlobalFilteredRows}
             globalFilter={state.globalFilter}
@@ -152,14 +212,17 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
           {headerGroups.map((headerGroup) =>
             headerGroup.headers.map((column) =>
               column.Filter ? (
-                <div className="mt-2 sm:mt-0" key={column.id}>
+                <div
+                  className="mt-2 sm:mt-0 sm:flex sm:items-center"
+                  key={column.id}
+                >
                   {column.render("Filter")}
                 </div>
               ) : null
             )
           )}
         </div>
-        <div className="overflow-x-scroll">
+        <div className="overflow-x-auto scrollbar-thumb-neutral-700 scrollbar-track-neutral-900 scrollbar-thin">
           <table
             {...getTableProps()}
             className="min-w-full divide-y divide-neutral-700"
@@ -171,20 +234,19 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
                     <th
                       {...column.getHeaderProps(column.getSortByToggleProps())}
                       scope="col"
-                      className="px-6 py-3 text-left uppercase text-neutral-100"
+                      className="px-2 py-4 text-sm text-left uppercase group sm:text-base text-neutral-100 first:pl-4 last:pr-4"
                     >
                       <div className="flex items-center justify-between">
                         {column.render("Header")}
-                        {/* Add a sort direction indicator */}
                         <span className="pl-2">
                           {column.isSorted ? (
                             column.isSortedDesc ? (
-                              <SortDescendingIcon className="w-4 h-4 text-gray-400" />
+                              <SortDescendingIcon className="w-4 h-4" />
                             ) : (
-                              <SortAscendingIcon className="w-4 h-4 text-gray-400" />
+                              <SortAscendingIcon className="w-4 h-4" />
                             )
                           ) : (
-                            <SelectorIcon className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100" />
+                            <SelectorIcon className="w-4 h-4 transition duration-200 opacity-0 group-hover:opacity-100" />
                           )}
                         </span>
                       </div>
@@ -195,7 +257,7 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
             </thead>
             <tbody
               {...getTableBodyProps()}
-              className="divide-y bg-neutral-800 divide-neutral-700 text-neutral-200"
+              className="text-sm divide-y bg-neutral-800 divide-neutral-700 text-neutral-200 sm:text-base"
             >
               {page.map((row, i) => {
                 prepareRow(row);
@@ -204,8 +266,12 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
                     {row.cells.map((cell) => {
                       return (
                         <td
-                          {...cell.getCellProps()}
-                          className="px-6 py-4 whitespace-nowrap"
+                          {...cell.getCellProps({
+                            style: {
+                              maxWidth: cell.column.width,
+                            },
+                          })}
+                          className="px-2 py-4 overflow-hidden whitespace-nowrap first:pl-4 last:pr-4 text-ellipsis"
                         >
                           {cell.render("Cell")}
                         </td>
@@ -217,7 +283,7 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
             </tbody>
           </table>
         </div>
-        <div className="flex items-center justify-between py-3">
+        <div className="flex items-center justify-between pt-4">
           <div className="flex justify-between flex-1 sm:hidden">
             <Button
               className=""
@@ -236,14 +302,14 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
           </div>
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div className="flex items-baseline gap-x-2">
-              <span className="text-sm text-neutral-100">
-                Page <span className="font-medium">{state.pageIndex + 1}</span>{" "}
-                of <span className="font-medium">{pageOptions.length}</span>
+              <span className="text-neutral-100">
+                Page <span>{state.pageIndex + 1}</span> of{" "}
+                <span>{pageOptions.length}</span>
               </span>
               <label>
                 <span className="sr-only">Items Per Page</span>
                 <select
-                  className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  className="block w-full transition duration-500 border-0 rounded-md shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 bg-neutral-900 text-neutral-100"
                   value={state.pageSize}
                   onChange={(e) => {
                     setPageSize(Number(e.target.value));

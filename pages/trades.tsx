@@ -5,19 +5,8 @@ import PageTitle from "../components/ui/PageTitle";
 import TradesTable, {
   SelectColumnFilter,
 } from "../components/widgets/TradesTable";
-
-// <th className="px-6 py-3 text-left">Date</th>
-// <th className="px-6 py-3 text-left">Ticker</th>
-// <th className="px-6 py-3 text-left">Expiry</th>
-// <th className="px-6 py-3 text-left">Strike</th>
-// <th className="px-6 py-3 text-left">Srategy</th>
-// <th className="px-6 py-3 text-left">Quantity</th>
-// <th className="px-6 py-3 text-left">Entry</th>
-// <th className="px-6 py-3 text-left">Exit</th>
-// <th className="px-6 py-3 text-left">Premium</th>
-// <th className="px-6 py-3 text-left">Return</th>
-// <th className="px-6 py-3 text-left">Return %</th>
-// <th className="px-6 py-3 text-left">Status</th>
+import { StatusBadge } from "../components/ui/Badge";
+import { Button } from "../components/ui/Button";
 
 const getData = () => {
   const data = [
@@ -26,18 +15,63 @@ const getData = () => {
       ticker: "TSLA",
       expiry: "01/21/2022",
       strike: "$1000",
-      strategy: "Call",
+      strategy: "Put",
       quantity: "1",
-      entry: "5.00",
-      exit: "10.00",
-      premium: "$300",
-      return: "$500",
-      return_percent: "100%",
+      entry: "3.78",
+      exit: "10.28",
+      premium: "$378",
+      return: "$650",
+      return_percent: "172%",
       status: "Win",
       notes: "Harry's signal",
     },
     {
       date: "01/20/2022",
+      ticker: "BABA",
+      expiry: "01/21/2022",
+      strike: "$150",
+      strategy: "Call",
+      quantity: "3",
+      entry: "3.30",
+      exit: "1.03",
+      premium: "$990",
+      return: "-$681",
+      return_percent: "-69%",
+      status: "Lost",
+      notes: "FOMO",
+    },
+    {
+      date: "01/20/2022",
+      ticker: "AMZN",
+      expiry: "01/21/2022",
+      strike: "$2800",
+      strategy: "Put",
+      quantity: "1",
+      entry: "12.00",
+      exit: "36.00",
+      premium: "$1200",
+      return: "$2400",
+      return_percent: "200%",
+      status: "Win",
+      notes: "Harry's Signal",
+    },
+    {
+      date: "01/20/2022",
+      ticker: "GLD",
+      expiry: "01/21/2022",
+      strike: "$72",
+      strategy: "Call",
+      quantity: "4",
+      entry: "1.30",
+      exit: "2.73",
+      premium: "$520",
+      return: "$572",
+      return_percent: "110%",
+      status: "Win",
+      notes: "Harry's Signal",
+    },
+    {
+      date: "01/20/2022",
       ticker: "TSLA",
       expiry: "01/21/2022",
       strike: "$1000",
@@ -49,6 +83,42 @@ const getData = () => {
       return: "$500",
       return_percent: "100%",
       status: "Win",
+    },
+    {
+      date: "01/20/2022",
+      ticker: "SQ",
+      expiry: "01/21/2022",
+      strike: "$180",
+      strategy: "Call",
+      quantity: "1",
+      entry: "5.00",
+      premium: "$500",
+      status: "Open",
+    },
+    {
+      date: "01/20/2022",
+      ticker: "TSLA",
+      expiry: "01/21/2022",
+      strike: "$1000",
+      strategy: "Call",
+      quantity: "1",
+      entry: "5.00",
+      exit: "10.00",
+      premium: "$300",
+      return: "$500",
+      return_percent: "100%",
+      status: "Win",
+    },
+    {
+      date: "01/20/2022",
+      ticker: "PTON",
+      expiry: "01/21/2022",
+      strike: "$180",
+      strategy: "Put",
+      quantity: "1",
+      entry: "2.40",
+      premium: "$240",
+      status: "Open",
     },
     {
       date: "01/20/2022",
@@ -76,91 +146,7 @@ const getData = () => {
       premium: "$300",
       return: "$500",
       return_percent: "100%",
-      status: "Win",
-    },
-    {
-      date: "01/20/2022",
-      ticker: "TSLA",
-      expiry: "01/21/2022",
-      strike: "$1000",
-      strategy: "Call",
-      quantity: "1",
-      entry: "5.00",
-      exit: "10.00",
-      premium: "$300",
-      return: "$500",
-      return_percent: "100%",
-      status: "Win",
-    },
-    {
-      date: "01/20/2022",
-      ticker: "TSLA",
-      expiry: "01/21/2022",
-      strike: "$1000",
-      strategy: "Call",
-      quantity: "1",
-      entry: "5.00",
-      exit: "10.00",
-      premium: "$300",
-      return: "$500",
-      return_percent: "100%",
-      status: "Win",
-    },
-    {
-      date: "01/20/2022",
-      ticker: "TSLA",
-      expiry: "01/21/2022",
-      strike: "$1000",
-      strategy: "Call",
-      quantity: "1",
-      entry: "5.00",
-      exit: "10.00",
-      premium: "$300",
-      return: "$500",
-      return_percent: "100%",
-      status: "Win",
-    },
-    {
-      date: "01/20/2022",
-      ticker: "TSLA",
-      expiry: "01/21/2022",
-      strike: "$1000",
-      strategy: "Call",
-      quantity: "1",
-      entry: "5.00",
-      exit: "10.00",
-      premium: "$300",
-      return: "$500",
-      return_percent: "100%",
-      status: "Win",
-    },
-    {
-      date: "01/20/2022",
-      ticker: "TSLA",
-      expiry: "01/21/2022",
-      strike: "$1000",
-      strategy: "Call",
-      quantity: "1",
-      entry: "5.00",
-      exit: "10.00",
-      premium: "$300",
-      return: "$500",
-      return_percent: "100%",
-      status: "Win",
-    },
-    {
-      date: "01/20/2022",
-      ticker: "TSLA",
-      expiry: "01/21/2022",
-      strike: "$1000",
-      strategy: "Call",
-      quantity: "1",
-      entry: "5.00",
-      exit: "10.00",
-      premium: "$300",
-      return: "$500",
-      return_percent: "100%",
-      status: "Win",
+      status: "Lost",
     },
     {
       date: "01/20/2022",
@@ -236,12 +222,29 @@ const Trades = () => {
       {
         Header: "Status",
         accessor: "status",
+        Cell: StatusBadge,
         Filter: SelectColumnFilter,
         filter: "includes",
       },
       {
         Header: "Notes",
         accessor: "notes",
+        maxWidth: 100,
+      },
+      {
+        Header: "Actions",
+        accessor: "actions",
+        Cell: ({ row }: { row: any }) => (
+          <div className="space-x-2">
+            <Button className="" disabled={false}>
+              Edit
+            </Button>
+            <Button className="!text-danger-500" disabled={false}>
+              Delete
+            </Button>
+            {console.log(row)}
+          </div>
+        ),
       },
     ],
     []

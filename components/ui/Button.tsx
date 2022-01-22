@@ -19,15 +19,15 @@ export const Button: NextPage<IButtonProps> = ({
   disabled,
   ...rest
 }: {
-  children: ReactNode;
-  className: string;
-  disabled: boolean;
+  children?: ReactNode;
+  className?: string;
+  disabled?: boolean;
 }) => {
   return (
     <button
       type="button"
       className={classNames(
-        "relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50",
+        "relative inline-flex items-center px-2 py-2 bg-neutral-900 text-neutral-100 hover:bg-neutral-700 rounded-md",
         className
       )}
       {...rest}
@@ -43,15 +43,15 @@ export const PageButton: NextPage<IButtonProps> = ({
   disabled,
   ...rest
 }: {
-  children: ReactNode;
-  className: string;
-  disabled: boolean;
+  children?: ReactNode;
+  className?: string;
+  disabled?: boolean;
 }) => {
   return (
     <button
       type="button"
       className={classNames(
-        "relative inline-flex items-center px-2 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50",
+        "relative inline-flex items-center px-2 py-2 border border-neutral-800 bg-neutral-900 text-neutral-100 hover:bg-neutral-700",
         className
       )}
       {...rest}
