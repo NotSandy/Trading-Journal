@@ -212,12 +212,12 @@ const Trades = () => {
         accessor: "premium",
       },
       {
-        Header: "Return",
-        accessor: "return",
+        Header: "PnL",
+        accessor: "pnl",
       },
       {
-        Header: "Return%",
-        accessor: "return_percent",
+        Header: "%",
+        accessor: "percent",
       },
       {
         Header: "Status",

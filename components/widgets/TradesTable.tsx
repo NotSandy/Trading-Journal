@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-key */
 import { NextPage } from "next";
-import React, { Fragment, MutableRefObject } from "react";
+import React, { MutableRefObject } from "react";
 import Image from "next/image";
 import {
   useTable,

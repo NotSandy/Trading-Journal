@@ -46,6 +46,23 @@ CREATE TABLE "VerificationToken" (
     "expires" TIMESTAMP(3) NOT NULL
 );
 
+-- CreateTable
+CREATE TABLE "Trade" (
+    "id" TEXT NOT NULL,
+    "date" DATE NOT NULL,
+    "ticker" TEXT NOT NULL,
+    "expiry" DATE NOT NULL,
+    "time" TIME NOT NULL,
+    "strike" INTEGER NOT NULL,
+    "strategy" TEXT NOT NULL,
+    "quantity" INTEGER NOT NULL DEFAULT 1,
+    "entry" INTEGER NOT NULL,
+    "exit" INTEGER,
+    "user_id" TEXT NOT NULL,
+
+    CONSTRAINT "Trade_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Account_provider_provider_account_id_key" ON "Account"("provider", "provider_account_id");
 
@@ -66,3 +83,6 @@ ALTER TABLE "Account" ADD CONSTRAINT "Account_user_id_fkey" FOREIGN KEY ("user_i
 
 -- AddForeignKey
 ALTER TABLE "Session" ADD CONSTRAINT "Session_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Trade" ADD CONSTRAINT "Trade_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -1,19 +1,19 @@
 import { Dialog, Transition } from "@headlessui/react";
-import Router from "next/router";
 import React, { Fragment, useState } from "react";
 import { Button } from "../ui/Button";
 
 const AddTradeModal = () => {
   let [isOpen, setIsOpen] = useState(false);
-  const [date, setDate] = useState();
+  const [date, setDate] = useState<Date | null>(new Date());
+  const [time, setTime] = useState<Date | null>(new Date());
   const [ticker, setTicker] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [time, setTime] = useState("");
+  const [expiry, setExpiry] = useState<Date | null>(new Date());
   const [strike, setStrike] = useState("");
-  const [strategy, setStrategy] = useState("");
+  const [strategy, setStrategy] = useState("Call");
   const [quantity, setQuantity] = useState("");
   const [entry, setEntry] = useState("");
   const [exit, setExit] = useState("");
+  const [notes, setNotes] = useState("");
 
   function closeModal() {
     setIsOpen(false);
@@ -36,13 +36,14 @@ const AddTradeModal = () => {
         quantity,
         entry,
         exit,
+        notes,
       };
       await fetch("/api/trade", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      await Router.push("/trades");
+      await closeModal();
     } catch (error) {
       console.error(error);
     }
@@ -97,38 +98,50 @@ const AddTradeModal = () => {
                   Add Trade Manually
                 </Dialog.Title>
                 <form onSubmit={submitTrade}>
-                  {" "}
                   <div className="flex flex-col p-4 space-y-2">
                     <input
                       type="date"
                       className="block w-full px-4 transition duration-500 border-0 rounded-md shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 bg-neutral-900 text-neutral-100"
-                      value={date}
+                      onChange={(e) => setDate(e.target.valueAsDate)}
+                      defaultValue={new Date().toISOString().substring(0, 10)}
+                      required
+                    />
+                    <input
+                      type="time"
+                      className="block w-full px-4 transition duration-500 border-0 rounded-md shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 bg-neutral-900 text-neutral-100"
+                      onChange={(e) => setTime(e.target.valueAsDate)}
+                      defaultValue={new Date().toTimeString().substring(0, 5)}
                     />
                     <input
                       type="text"
                       className="block w-full px-4 transition duration-500 border-0 rounded-md shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 bg-neutral-900 text-neutral-100"
                       placeholder="Ticker"
+                      onChange={(e) => setTicker(e.target.value)}
                       value={ticker}
+                      required
                     />
                     <input
                       type="date"
                       className="block w-full px-4 transition duration-500 border-0 rounded-md shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 bg-neutral-900 text-neutral-100"
-                      value={expiry}
-                    />
-                    <input
-                      type="time"
-                      className="block w-full px-4 transition duration-500 border-0 rounded-md shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 bg-neutral-900 text-neutral-100"
-                      value={time}
+                      onChange={(e) => setExpiry(e.target.valueAsDate)}
+                      defaultValue={new Date().toISOString().substring(0, 10)}
+                      required
                     />
                     <input
                       type="number"
                       className="block w-full px-4 transition duration-500 border-0 rounded-md shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 bg-neutral-900 text-neutral-100"
                       placeholder="Strike"
+                      onChange={(e) => setStrike(e.target.value)}
                       value={strike}
+                      required
                     />
                     <select
-                      className="block w-full px-4 transition duration-500 border-0 rounded-md shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 bg-neutral-900 text-neutral-100"
+                      className="block w-full px-4 transition duration-500 border-0 rounded-md shadow-sm form-select focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 bg-neutral-900 text-neutral-100"
+                      onChange={(e) => {
+                        setStrategy(e.target.value);
+                      }}
                       value={strategy}
+                      required
                     >
                       <option>Call</option>
                       <option>Put</option>
@@ -137,19 +150,30 @@ const AddTradeModal = () => {
                       type="number"
                       className="block w-full px-4 transition duration-500 border-0 rounded-md shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 bg-neutral-900 text-neutral-100"
                       placeholder="Quantity"
+                      onChange={(e) => setQuantity(e.target.value)}
                       value={quantity}
+                      required
                     />
                     <input
                       type="number"
                       className="block w-full px-4 transition duration-500 border-0 rounded-md shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 bg-neutral-900 text-neutral-100"
                       placeholder="Entry"
+                      onChange={(e) => setEntry(e.target.value)}
                       value={entry}
+                      required
                     />
                     <input
                       type="number"
                       className="block w-full px-4 transition duration-500 border-0 rounded-md shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 bg-neutral-900 text-neutral-100"
                       placeholder="Exit"
+                      onChange={(e) => setExit(e.target.value)}
                       value={exit}
+                    />
+                    <textarea
+                      className="block w-full px-4 transition duration-500 border-0 rounded-md shadow-sm form-textarea focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 bg-neutral-900 text-neutral-100"
+                      placeholder="Notes"
+                      onChange={(e) => setNotes(e.target.value)}
+                      value={notes}
                     />
                   </div>
                   <div className="flex justify-between p-4">

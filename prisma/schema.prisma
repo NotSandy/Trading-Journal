@@ -58,15 +58,20 @@ model VerificationToken {
 
 model Trade {
   id       String   @id @default(cuid())
-  date     DateTime
+  date     DateTime @db.Date
   ticker   String
-  expiry   DateTime
-  time     DateTime
-  strike   Int
+  expiry   DateTime @db.Date
+  time     DateTime @db.Time()
+  strike   Float
   strategy String
   quantity Int      @default(1)
-  entry    Int
-  exit     Int?
+  entry    Float
+  exit     Float?
+  premium  Float
+  pnl      Float?
+  percent  Float?
+  status   String
+  notes    String?
   userId   String   @map("user_id")
   user     User?    @relation(fields: [userId], references: [id])
 }
