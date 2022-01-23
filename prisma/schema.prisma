@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
@@ -45,6 +45,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  trades        Trade[]
 }
 
 model VerificationToken {
@@ -53,4 +54,19 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Trade {
+  id       String   @id @default(cuid())
+  date     DateTime
+  ticker   String
+  expiry   DateTime
+  time     DateTime
+  strike   Int
+  strategy String
+  quantity Int      @default(1)
+  entry    Int
+  exit     Int?
+  userId   String   @map("user_id")
+  user     User?    @relation(fields: [userId], references: [id])
 }

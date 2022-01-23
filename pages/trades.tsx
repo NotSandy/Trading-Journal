@@ -236,10 +236,10 @@ const Trades = () => {
         accessor: "actions",
         Cell: ({ row }: { row: any }) => (
           <div className="space-x-2">
-            <Button className="" disabled={false}>
+            <Button type="button">
               Edit
             </Button>
-            <Button className="!text-danger-500" disabled={false}>
+            <Button type="button" className="!text-danger-500">
               Delete
             </Button>
             {console.log(row)}

@@ -9,23 +9,26 @@ interface IButtonProps
     >,
     React.AriaAttributes {
   children: ReactNode;
-  className: string;
-  disabled: boolean;
+  className?: string;
+  disabled?: boolean;
+  type: "button" | "submit" | "reset" | undefined;
 }
 
 export const Button: NextPage<IButtonProps> = ({
   children,
   className,
   disabled,
+  type,
   ...rest
 }: {
-  children?: ReactNode;
+  children: ReactNode;
   className?: string;
   disabled?: boolean;
+  type: "button" | "submit" | "reset" | undefined;
 }) => {
   return (
     <button
-      type="button"
+      type={type}
       className={classNames(
         "relative inline-flex items-center px-2 py-2 bg-neutral-900 text-neutral-100 hover:bg-neutral-700 rounded-md",
         className

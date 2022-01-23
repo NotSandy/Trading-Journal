@@ -22,7 +22,7 @@ import {
   SearchCircleIcon,
 } from "@heroicons/react/outline";
 import { Button, PageButton } from "../ui/Button";
-import { useRouter } from "next/router";
+import AddTradeModal from "./AddTradeModal";
 
 interface Props {
   columns: any;
@@ -50,7 +50,7 @@ function GlobalFilter({
         <SearchCircleIcon className="absolute w-8 h-8 top-2 left-2 text-primary-500" />
         <input
           type="text"
-          className="w-full h-12 pl-12 tracking-widest placeholder-opacity-75 transition duration-500 border-0 rounded-full outline-none bg-neutral-900 border-b-neutral-800 placeholder-neutral-100 text-primary-500 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 selection:text-secondary-500 "
+          className="w-full h-12 pl-12 tracking-widest placeholder-opacity-75 transition duration-500 border-0 rounded-full outline-none bg-neutral-900 border-b-neutral-800 placeholder-neutral-100 text-neutral-100 focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 selection:text-secondary-500 "
           value={value || ""}
           onChange={(e) => {
             setValue(e.target.value);
@@ -178,8 +178,6 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
     }
   );
 
-  const router = useRouter();
-
   return (
     <div className="relative overflow-hidden rounded-md bg-neutral-800">
       <div className="flex justify-between bg-primary-500">
@@ -187,16 +185,7 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
           <span className="text-lg font-semibold text-neutral-100">
             Your Trades
           </span>
-          <Button
-            className=""
-            disabled={false}
-            onClick={(e: any) => {
-              e.preventDefault();
-              router.push("/add-trade");
-            }}
-          >
-            Add Trade
-          </Button>
+          <AddTradeModal></AddTradeModal>
         </div>
         <div className="relative w-32 h-32 mr-4">
           <Image src="/assets/undraw/data.svg" alt="Email" layout="fill" />
@@ -222,7 +211,7 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
             )
           )}
         </div>
-        <div className="overflow-x-auto scrollbar-thumb-neutral-700 scrollbar-track-neutral-900 scrollbar-thin">
+        <div className="overflow-x-auto scrollbar-thumb-neutral-700 scrollbar-track-neutral-900 scrollbar-thin rounded-t-md">
           <table
             {...getTableProps()}
             className="min-w-full divide-y divide-neutral-700"
@@ -286,14 +275,14 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
         <div className="flex items-center justify-between pt-4">
           <div className="flex justify-between flex-1 sm:hidden">
             <Button
-              className=""
+              type="button"
               onClick={() => previousPage()}
               disabled={!canPreviousPage}
             >
               Previous
             </Button>
             <Button
-              className=""
+              type="button"
               onClick={() => nextPage()}
               disabled={!canNextPage}
             >
@@ -329,6 +318,7 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
                 aria-label="Pagination"
               >
                 <PageButton
+                  type="button"
                   className="rounded-l-md"
                   onClick={() => gotoPage(0)}
                   disabled={!canPreviousPage}
@@ -340,7 +330,7 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
                   />
                 </PageButton>
                 <PageButton
-                  className=""
+                  type="button"
                   onClick={() => previousPage()}
                   disabled={!canPreviousPage}
                 >
@@ -348,7 +338,7 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
                   <ChevronLeftIcon className="w-5 h-5" aria-hidden="true" />
                 </PageButton>
                 <PageButton
-                  className=""
+                  type="button"
                   onClick={() => nextPage()}
                   disabled={!canNextPage}
                 >
@@ -356,6 +346,7 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
                   <ChevronRightIcon className="w-5 h-5" aria-hidden="true" />
                 </PageButton>
                 <PageButton
+                  type="button"
                   className="rounded-r-md"
                   onClick={() => gotoPage(pageCount - 1)}
                   disabled={!canNextPage}
