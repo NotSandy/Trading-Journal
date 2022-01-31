@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 import React, { ReactNode } from "react";
-import { classNames } from "../../utils/shared/Utils";
+import { classNames } from "../../utils/shared/utils";
 
 interface IButtonProps
   extends React.DetailedHTMLProps<

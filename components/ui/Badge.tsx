@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { classNames } from "../../utils/shared/Utils";
+import { classNames } from "../../utils/shared/utils";
 
 interface IBadgeProps {
   value: string;

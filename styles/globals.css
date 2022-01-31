@@ -25,3 +25,7 @@
 body {
     @apply bg-neutral-1000 scrollbar-hide;
 }
+
+canvas {
+    width: 100% !important;
+}

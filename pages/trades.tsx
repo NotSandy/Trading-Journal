@@ -4,170 +4,16 @@ import Layout from "../components/layouts/Layout";
 import PageTitle from "../components/ui/PageTitle";
 import TradesTable, {
   SelectColumnFilter,
-} from "../components/widgets/TradesTable";
+} from "../components/trades/TradesTable";
 import { StatusBadge } from "../components/ui/Badge";
-import { Button } from "../components/ui/Button";
+import { prisma } from "../lib/prisma";
+import DeleteTradeModal from "../components/trades/DeleteTradeModal";
+import EditTradeModal from "../components/trades/EditTradeModal";
 
-const getData = () => {
-  const data = [
-    {
-      date: "01/20/2022",
-      ticker: "TSLA",
-      expiry: "01/21/2022",
-      strike: "$1000",
-      strategy: "Put",
-      quantity: "1",
-      entry: "3.78",
-      exit: "10.28",
-      premium: "$378",
-      return: "$650",
-      return_percent: "172%",
-      status: "Win",
-      notes: "Harry's signal",
-    },
-    {
-      date: "01/20/2022",
-      ticker: "BABA",
-      expiry: "01/21/2022",
-      strike: "$150",
-      strategy: "Call",
-      quantity: "3",
-      entry: "3.30",
-      exit: "1.03",
-      premium: "$990",
-      return: "-$681",
-      return_percent: "-69%",
-      status: "Lost",
-      notes: "FOMO",
-    },
-    {
-      date: "01/20/2022",
-      ticker: "AMZN",
-      expiry: "01/21/2022",
-      strike: "$2800",
-      strategy: "Put",
-      quantity: "1",
-      entry: "12.00",
-      exit: "36.00",
-      premium: "$1200",
-      return: "$2400",
-      return_percent: "200%",
-      status: "Win",
-      notes: "Harry's Signal",
-    },
-    {
-      date: "01/20/2022",
-      ticker: "GLD",
-      expiry: "01/21/2022",
-      strike: "$72",
-      strategy: "Call",
-      quantity: "4",
-      entry: "1.30",
-      exit: "2.73",
-      premium: "$520",
-      return: "$572",
-      return_percent: "110%",
-      status: "Win",
-      notes: "Harry's Signal",
-    },
-    {
-      date: "01/20/2022",
-      ticker: "TSLA",
-      expiry: "01/21/2022",
-      strike: "$1000",
-      strategy: "Call",
-      quantity: "1",
-      entry: "5.00",
-      exit: "10.00",
-      premium: "$300",
-      return: "$500",
-      return_percent: "100%",
-      status: "Win",
-    },
-    {
-      date: "01/20/2022",
-      ticker: "SQ",
-      expiry: "01/21/2022",
-      strike: "$180",
-      strategy: "Call",
-      quantity: "1",
-      entry: "5.00",
-      premium: "$500",
-      status: "Open",
-    },
-    {
-      date: "01/20/2022",
-      ticker: "TSLA",
-      expiry: "01/21/2022",
-      strike: "$1000",
-      strategy: "Call",
-      quantity: "1",
-      entry: "5.00",
-      exit: "10.00",
-      premium: "$300",
-      return: "$500",
-      return_percent: "100%",
-      status: "Win",
-    },
-    {
-      date: "01/20/2022",
-      ticker: "PTON",
-      expiry: "01/21/2022",
-      strike: "$180",
-      strategy: "Put",
-      quantity: "1",
-      entry: "2.40",
-      premium: "$240",
-      status: "Open",
-    },
-    {
-      date: "01/20/2022",
-      ticker: "TSLA",
-      expiry: "01/21/2022",
-      strike: "$1000",
-      strategy: "Call",
-      quantity: "1",
-      entry: "5.00",
-      exit: "10.00",
-      premium: "$300",
-      return: "$500",
-      return_percent: "100%",
-      status: "Win",
-    },
-    {
-      date: "01/20/2022",
-      ticker: "TSLA",
-      expiry: "01/21/2022",
-      strike: "$1000",
-      strategy: "Call",
-      quantity: "1",
-      entry: "5.00",
-      exit: "10.00",
-      premium: "$300",
-      return: "$500",
-      return_percent: "100%",
-      status: "Lost",
-    },
-    {
-      date: "01/20/2022",
-      ticker: "TSLA",
-      expiry: "01/21/2022",
-      strike: "$1000",
-      strategy: "Call",
-      quantity: "1",
-      entry: "5.00",
-      exit: "10.00",
-      premium: "$300",
-      return: "$500",
-      return_percent: "100%",
-      status: "Win",
-    },
-  ];
-  return [...data];
-};
-
-const Trades = () => {
+const Trades = (props: any) => {
   const { data: session, status } = useSession();
+  let { trades } = props;
+  trades = JSON.parse(trades);
 
   const columns = React.useMemo(
     () => [
@@ -229,28 +75,23 @@ const Trades = () => {
       {
         Header: "Notes",
         accessor: "notes",
+        disableSortBy: true,
         maxWidth: 100,
       },
       {
         Header: "Actions",
         accessor: "actions",
+        disableSortBy: true,
         Cell: ({ row }: { row: any }) => (
           <div className="space-x-2">
-            <Button type="button">
-              Edit
-            </Button>
-            <Button type="button" className="!text-danger-500">
-              Delete
-            </Button>
-            {console.log(row)}
+            <EditTradeModal id={row.original.id}></EditTradeModal>
+            <DeleteTradeModal id={row.original.id}></DeleteTradeModal>
           </div>
         ),
       },
     ],
     []
   );
-
-  const data = React.useMemo(() => getData(), []);
 
   if (status === "loading") {
     return <h1>Loading...</h1>;
@@ -260,7 +101,7 @@ const Trades = () => {
     return (
       <div>
         <PageTitle title="Trades" />
-        <TradesTable columns={columns} data={data} />
+        <TradesTable columns={columns} data={trades} />
       </div>
     );
   }
@@ -284,7 +125,57 @@ export async function getServerSideProps(context: any) {
     };
   }
 
+  const data = await prisma.trade.findMany({
+    where: {
+      user: { email: session?.user?.email },
+    },
+  });
+
+  data.forEach((element: any) => {
+    if (element.date) {
+      element.date = element.date.toISOString().substring(0, 10);
+    }
+    if (element.expiry) {
+      element.expiry = element.expiry.toISOString().substring(0, 10);
+    }
+    if (element.strike) {
+      element.strike = element.strike.toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+    }
+    if (element.entry) {
+      element.entry = element.entry.toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+    }
+    if (element.exit) {
+      element.exit = element.exit.toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+    }
+    if (element.premium) {
+      element.premium = element.premium.toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+    }
+    if (element.pnl) {
+      element.pnl = element.pnl.toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+    }
+    if (element.percent) {
+      element.percent = element.percent.toFixed(0) + "%";
+    }
+  });
+
+  const trades = JSON.stringify(data);
+
   return {
-    props: { session },
+    props: { session, trades },
   };
 }
