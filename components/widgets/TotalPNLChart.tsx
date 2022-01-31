@@ -3,18 +3,20 @@ import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend,
   defaults,
 } from "chart.js";
-import { Bar } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend
@@ -31,7 +33,7 @@ const options = {
     //   text: "Trades Made",
     // },
     legend: {
-      display: true,
+      display: false,
       position: "bottom" as "bottom",
       align: "center" as "center",
     },
@@ -43,18 +45,17 @@ const options = {
   maintainAspectRatio: false,
   scales: {
     x: {
-      stacked: true,
       grid: {
         display: true,
         color: "#5D5D5D",
       },
     },
     y: {
-      stacked: true,
       grid: {
         display: true,
         color: "#5D5D5D",
       },
+      grace: "5%",
     },
   },
 };
@@ -76,38 +77,31 @@ const data = {
   ],
   datasets: [
     {
-      label: "Win",
-      backgroundColor: "#48C9B0",
-      hoverBackgroundColor: "#1ABC9C",
-      data: [65, 59, 20, 81, 56, 55, 40, 45, 67, 100, 57, 21, 12],
-    },
-    {
-      label: "Open",
-      backgroundColor: "#E8B365",
-      hoverBackgroundColor: "#E2A03F",
-      data: [65, 59, 20, 81, 56, 55, 40, 45, 67, 100, 57, 21, 12],
-    },
-    {
-      label: "Lost",
-      backgroundColor: "#EC747B",
-      hoverBackgroundColor: "#E7515A",
-      data: [65, 59, 20, 81, 56, 55, 40, 45, 67, 100, 57, 21, 12],
+      // label: "Total PnL",
+      pointBackgroundColor: "#7AC0F8",
+      pointBorderColor: "#E8E8E8",
+      pointBorderWidth: 1,
+      pointRadius: 6,
+      hoverBackgroundColor: "#2196F3",
+      borderColor: "#8C8C8C",
+      tension: 0.35,
+      data: [65, 59, 20, 81, 56, 55, 40, 45, 67, 100, -10, 77],
     },
   ],
 };
 
-const TradesMadeChart = () => {
+const TotalPNLChart = () => {
   return (
     <div className="px-2 mb-4">
       <div className="rounded-md bg-neutral-800">
         <div className="flex flex-wrap items-center justify-center p-4 gap-y-4">
           <div className="basis-full">
             <div className="text-lg font-bold text-neutral-100">
-              <span>Trades Made</span>
+              <span>Total PnL Chart</span>
             </div>
           </div>
           <div className="h-96 basis-full">
-            <Bar data={data} options={options}></Bar>
+            <Line data={data} options={options}></Line>
           </div>
         </div>
       </div>
@@ -115,4 +109,4 @@ const TradesMadeChart = () => {
   );
 };
 
-export default TradesMadeChart;
+export default TotalPNLChart;

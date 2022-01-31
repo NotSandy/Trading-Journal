@@ -169,19 +169,19 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
     useRowSelect,
     (hooks) => {
       hooks.visibleColumns.push((columns) => [
-        {
-          id: "selection",
-          Header: ({ getToggleAllPageRowsSelectedProps }) => (
-            <div>
-              <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
-            </div>
-          ),
-          Cell: ({ row }) => (
-            <div>
-              <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
-            </div>
-          ),
-        },
+        // {
+        //   id: "selection",
+        //   Header: ({ getToggleAllPageRowsSelectedProps }) => (
+        //     <div>
+        //       <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
+        //     </div>
+        //   ),
+        //   Cell: ({ row }) => (
+        //     <div>
+        //       <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+        //     </div>
+        //   ),
+        // },
         ...columns,
       ]);
     }

@@ -11,14 +11,15 @@ const Welcome: NextPage<IWelcomeProps> = ({ userProfilePicture }) => {
     <div className="px-2 mb-4">
       <div className="overflow-hidden rounded-md bg-neutral-800">
         <div className="flex justify-between bg-primary-500">
-          <span className="p-4 mb-8 text-lg font-bold text-neutral-100">
+          <span className="p-4 mb-8 text-lg font-bold text-neutral-100 basis-2/3">
             Welcome back to Trade Journal!
           </span>
-          <div className="relative w-32 h-32 mr-4">
+          <div className="relative w-32 h-32 my-4 mr-4 basis-1/3">
             <Image
               src="/assets/undraw/financial-data.svg"
-              alt="Email"
+              alt="Data"
               layout="fill"
+              objectFit="contain"
             />
           </div>
         </div>

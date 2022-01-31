@@ -11,9 +11,15 @@ import {
 } from "@heroicons/react/outline";
 import TradesMadeGraph from "../components/widgets/TradesMadeChart";
 import MonthlyPNLChart from "../components/widgets/MonthlyPNLChart";
+import PNLChart from "../components/widgets/TotalPNLChart";
+import OpenTrades from "../components/widgets/OpenTrades";
+import { prisma } from "../lib/prisma";
+import TopTrades from "../components/widgets/TopTrades";
 
-const Dashboard = () => {
+const Dashboard = (props: any) => {
   const { data: session, status } = useSession();
+  let { trades } = props;
+  trades = JSON.parse(trades);
 
   if (status === "loading") {
     return <h1>Loading...</h1>;
@@ -57,9 +63,17 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-wrap lg:flex-nowrap">
+        <div className="flex">
           <div className="flex-col basis-full">
-            <MonthlyPNLChart></MonthlyPNLChart>
+            <PNLChart></PNLChart>
+          </div>
+        </div>
+        <div className="flex flex-wrap lg:flex-nowrap">
+          <div className="flex-col min-w-0 basis-full lg:basis-1/2">
+            <OpenTrades data={trades}></OpenTrades>
+          </div>
+          <div className="flex-col basis-full lg:basis-1/2">
+            <TopTrades></TopTrades>
           </div>
         </div>
       </div>
@@ -84,8 +98,31 @@ export async function getServerSideProps(context: any) {
       props: {},
     };
   }
+  const data = await prisma.trade.findMany({
+    where: {
+      user: { email: session?.user?.email },
+      status: "open",
+    },
+  });
+
+  data.forEach((element: any) => {
+    if (element.date) {
+      element.date = element.date.toISOString().substring(0, 10);
+    }
+    if (element.expiry) {
+      element.expiry = element.expiry.toISOString().substring(0, 10);
+    }
+    if (element.strike) {
+      element.strike = element.strike.toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+    }
+  });
+
+  const trades = JSON.stringify(data);
 
   return {
-    props: { session },
+    props: { session, trades },
   };
 }

@@ -73,7 +73,7 @@ const AddTradeModal = () => {
 
   return (
     <div>
-      <Button type="button" onClick={openAddTradeModal}>
+      <Button type="button" onClick={openAddTradeModal} className="whitespace-nowrap">
         Add Trade
       </Button>
 

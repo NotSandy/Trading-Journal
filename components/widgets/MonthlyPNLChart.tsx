@@ -83,7 +83,7 @@ const MonthlyPNLChart = () => {
                 </div>
               </div>
             </div>
-            <div className="basis-1/2">
+            <div className="h-32 basis-1/2">
               <Doughnut data={data} options={options}></Doughnut>
             </div>
           </div>
