@@ -1,7 +1,5 @@
-/* eslint-disable react/jsx-key */
 import { NextPage } from "next";
 import React, { MutableRefObject } from "react";
-import Image from "next/image";
 import {
   useTable,
   useGlobalFilter,
@@ -21,12 +19,16 @@ import {
   SelectorIcon,
   SearchCircleIcon,
 } from "@heroicons/react/outline";
-import { Button, PageButton } from "../ui/Button";
+import DeleteTradeModal from "./DeleteTradeModal";
+import EditTradeModal from "./EditTradeModal";
+import { StatusBadge } from "../ui/Badge";
 import AddTradeModal from "./AddTradeModal";
+import { Button, PageButton } from "../ui/Button";
+import Image from "next/image";
 
-interface Props {
-  columns: any;
+interface ITradesTableSetupProps {
   data: any;
+  columns: any;
 }
 
 function GlobalFilter({
@@ -130,7 +132,10 @@ const IndeterminateCheckbox = React.forwardRef(
 
 IndeterminateCheckbox.displayName = "IndeterminateCheckbox";
 
-const TradesTable: NextPage<Props> = ({ columns, data }) => {
+const TradesTableSetup: NextPage<ITradesTableSetupProps> = ({
+  columns,
+  data,
+}) => {
   const {
     getTableProps,
     getTableBodyProps,
@@ -186,7 +191,6 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
       ]);
     }
   );
-
   return (
     <div className="px-2 mb-4">
       <div className="relative overflow-hidden rounded-md bg-neutral-800">
@@ -198,7 +202,12 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
             <AddTradeModal></AddTradeModal>
           </div>
           <div className="relative w-32 h-32 mr-4">
-            <Image src="/assets/undraw/data.svg" alt="Email" layout="fill" />
+            <Image
+              src="/assets/undraw/data.svg"
+              alt="Email"
+              layout="fill"
+              priority
+            />
           </div>
         </div>
         <div className="p-4">
@@ -229,36 +238,43 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
               className="min-w-full divide-y divide-neutral-700"
             >
               <thead className="bg-primary-500">
-                {headerGroups.map((headerGroup) => (
-                  <tr {...headerGroup.getHeaderGroupProps()}>
-                    {headerGroup.headers.map((column) => (
-                      <th
-                        {...column.getHeaderProps(
-                          column.getSortByToggleProps()
-                        )}
-                        scope="col"
-                        className="px-2 py-4 text-sm text-left uppercase group sm:text-base text-neutral-100 first:pl-4 last:pr-4"
-                      >
-                        <div className="flex items-center justify-between">
-                          {column.render("Header")}
-                          <span className="pl-2">
-                            {column.isSorted ? (
-                              column.isSortedDesc ? (
-                                <SortDescendingIcon className="w-4 h-4" />
-                              ) : (
-                                <SortAscendingIcon className="w-4 h-4" />
-                              )
-                            ) : column.disableSortBy ? (
-                              ""
-                            ) : (
-                              <SelectorIcon className="w-4 h-4 transition duration-200 opacity-0 group-hover:opacity-100" />
-                            )}
-                          </span>
-                        </div>
-                      </th>
-                    ))}
-                  </tr>
-                ))}
+                {headerGroups.map((headerGroup) => {
+                  const { key, ...restHeaderGroupProps } =
+                    headerGroup.getHeaderGroupProps();
+                  return (
+                    <tr key={key} {...restHeaderGroupProps}>
+                      {headerGroup.headers.map((column) => {
+                        const { key, ...restColumnProps } =
+                          column.getHeaderProps(column.getSortByToggleProps());
+                        return (
+                          <th
+                            key={key}
+                            {...restColumnProps}
+                            scope="col"
+                            className="px-2 py-4 text-sm text-left uppercase group sm:text-base text-neutral-100 first:pl-4 last:pr-4"
+                          >
+                            <div className="flex items-center justify-between">
+                              {column.render("Header")}
+                              <span className="pl-2">
+                                {column.isSorted ? (
+                                  column.isSortedDesc ? (
+                                    <SortDescendingIcon className="w-4 h-4" />
+                                  ) : (
+                                    <SortAscendingIcon className="w-4 h-4" />
+                                  )
+                                ) : column.disableSortBy ? (
+                                  ""
+                                ) : (
+                                  <SelectorIcon className="w-4 h-4 transition duration-200 opacity-0 group-hover:opacity-100" />
+                                )}
+                              </span>
+                            </div>
+                          </th>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
               </thead>
               <tbody
                 {...getTableBodyProps()}
@@ -267,16 +283,19 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
                 {page.length > 0 ? (
                   page.map((row, i) => {
                     prepareRow(row);
+                    const { key, ...restRowProps } = row.getRowProps();
                     return (
-                      <tr {...row.getRowProps()}>
+                      <tr key={key} {...restRowProps}>
                         {row.cells.map((cell) => {
+                          const { key, ...restRowProps } = cell.getCellProps({
+                            style: {
+                              maxWidth: cell.column.width,
+                            },
+                          });
                           return (
                             <td
-                              {...cell.getCellProps({
-                                style: {
-                                  maxWidth: cell.column.width,
-                                },
-                              })}
+                              key={key}
+                              {...restRowProps}
                               className="px-2 py-4 overflow-hidden whitespace-nowrap first:pl-4 last:pr-4 text-ellipsis"
                             >
                               {cell.render("Cell")}
@@ -385,6 +404,91 @@ const TradesTable: NextPage<Props> = ({ columns, data }) => {
       </div>
     </div>
   );
+};
+
+interface ITradesTableProps {
+  data: any;
+}
+
+const TradesTable: NextPage<ITradesTableProps> = ({ data }) => {
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: "Date",
+        accessor: "date",
+      },
+      {
+        Header: "Ticker",
+        accessor: "ticker",
+        Filter: SelectColumnFilter,
+        filter: "includes",
+      },
+      {
+        Header: "Expiry",
+        accessor: "expiry",
+      },
+      {
+        Header: "Strike",
+        accessor: "strike",
+      },
+      {
+        Header: "Strategy",
+        accessor: "strategy",
+        Filter: SelectColumnFilter,
+        filter: "includes",
+      },
+      {
+        Header: "Quantity",
+        accessor: "quantity",
+      },
+      {
+        Header: "Entry",
+        accessor: "entry",
+      },
+      {
+        Header: "Exit",
+        accessor: "exit",
+      },
+      {
+        Header: "Premium",
+        accessor: "premium",
+      },
+      {
+        Header: "PnL",
+        accessor: "pnl",
+      },
+      {
+        Header: "%",
+        accessor: "percent",
+      },
+      {
+        Header: "Status",
+        accessor: "status",
+        Cell: StatusBadge,
+        Filter: SelectColumnFilter,
+        filter: "includes",
+      },
+      {
+        Header: "Notes",
+        accessor: "notes",
+        disableSortBy: true,
+        maxWidth: 100,
+      },
+      {
+        Header: "Actions",
+        accessor: "actions",
+        disableSortBy: true,
+        Cell: ({ row }: { row: any }) => (
+          <div className="space-x-2">
+            <EditTradeModal id={row.original.id}></EditTradeModal>
+            <DeleteTradeModal id={row.original.id}></DeleteTradeModal>
+          </div>
+        ),
+      },
+    ],
+    []
+  );
+  return <TradesTableSetup columns={columns} data={data}></TradesTableSetup>;
 };
 
 export default TradesTable;

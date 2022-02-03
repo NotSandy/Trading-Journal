@@ -62,7 +62,6 @@ const EditTradeModal: NextPage<EditTradeModalProps> = ({ id }) => {
     e.preventDefault();
     try {
       const body = {
-        id: id,
         date,
         ticker,
         expiry,
@@ -74,7 +73,7 @@ const EditTradeModal: NextPage<EditTradeModalProps> = ({ id }) => {
         exit,
         notes,
       };
-      const res = await fetch("/api/trade", {
+      const res = await fetch(`/api/trade/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -169,7 +168,9 @@ const EditTradeModal: NextPage<EditTradeModalProps> = ({ id }) => {
                         type="text"
                         className="block w-full px-4 uppercase transition duration-500 border-0 rounded-md shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 bg-neutral-900 text-neutral-100"
                         placeholder="Ticker"
-                        onChange={(e) => setTicker(e.target.value.toUpperCase())}
+                        onChange={(e) =>
+                          setTicker(e.target.value.toUpperCase())
+                        }
                         value={ticker}
                         required
                       />

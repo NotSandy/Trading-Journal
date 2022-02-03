@@ -2,96 +2,14 @@ import React, { ReactElement } from "react";
 import { useSession, getSession } from "next-auth/react";
 import Layout from "../components/layouts/Layout";
 import PageTitle from "../components/ui/PageTitle";
-import TradesTable, {
-  SelectColumnFilter,
-} from "../components/trades/TradesTable";
-import { StatusBadge } from "../components/ui/Badge";
+import TradesTable from "../components/trades/TradesTable";
 import { prisma } from "../lib/prisma";
-import DeleteTradeModal from "../components/trades/DeleteTradeModal";
-import EditTradeModal from "../components/trades/EditTradeModal";
+import { format } from "date-fns";
 
 const Trades = (props: any) => {
   const { data: session, status } = useSession();
   let { trades } = props;
   trades = JSON.parse(trades);
-
-  const columns = React.useMemo(
-    () => [
-      {
-        Header: "Date",
-        accessor: "date",
-      },
-      {
-        Header: "Ticker",
-        accessor: "ticker",
-        Filter: SelectColumnFilter,
-        filter: "includes",
-      },
-      {
-        Header: "Expiry",
-        accessor: "expiry",
-      },
-      {
-        Header: "Strike",
-        accessor: "strike",
-      },
-      {
-        Header: "Strategy",
-        accessor: "strategy",
-        Filter: SelectColumnFilter,
-        filter: "includes",
-      },
-      {
-        Header: "Quantity",
-        accessor: "quantity",
-      },
-      {
-        Header: "Entry",
-        accessor: "entry",
-      },
-      {
-        Header: "Exit",
-        accessor: "exit",
-      },
-      {
-        Header: "Premium",
-        accessor: "premium",
-      },
-      {
-        Header: "PnL",
-        accessor: "pnl",
-      },
-      {
-        Header: "%",
-        accessor: "percent",
-      },
-      {
-        Header: "Status",
-        accessor: "status",
-        Cell: StatusBadge,
-        Filter: SelectColumnFilter,
-        filter: "includes",
-      },
-      {
-        Header: "Notes",
-        accessor: "notes",
-        disableSortBy: true,
-        maxWidth: 100,
-      },
-      {
-        Header: "Actions",
-        accessor: "actions",
-        disableSortBy: true,
-        Cell: ({ row }: { row: any }) => (
-          <div className="space-x-2">
-            <EditTradeModal id={row.original.id}></EditTradeModal>
-            <DeleteTradeModal id={row.original.id}></DeleteTradeModal>
-          </div>
-        ),
-      },
-    ],
-    []
-  );
 
   if (status === "loading") {
     return <h1>Loading...</h1>;
@@ -101,7 +19,7 @@ const Trades = (props: any) => {
     return (
       <div>
         <PageTitle title="Trades" />
-        <TradesTable columns={columns} data={trades} />
+        <TradesTable data={trades} />
       </div>
     );
   }
@@ -133,10 +51,10 @@ export async function getServerSideProps(context: any) {
 
   data.forEach((element: any) => {
     if (element.date) {
-      element.date = element.date.toISOString().substring(0, 10);
+      element.date = format(new Date(element.date), "MM/dd/yy");
     }
     if (element.expiry) {
-      element.expiry = element.expiry.toISOString().substring(0, 10);
+      element.expiry = format(new Date(element.expiry), "MM/dd/yy");
     }
     if (element.strike) {
       element.strike = element.strike.toLocaleString("en-US", {

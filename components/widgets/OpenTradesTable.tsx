@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-key */
 import { NextPage } from "next";
 import React, { MutableRefObject } from "react";
 import {
@@ -26,7 +25,7 @@ import { StatusBadge } from "../ui/Badge";
 import AddTradeModal from "../trades/AddTradeModal";
 import { Button, PageButton } from "../ui/Button";
 
-interface IOpenTradesTableProps {
+interface IOpenTradesTableSetupProps {
   data: any;
   columns: any;
 }
@@ -132,7 +131,7 @@ const IndeterminateCheckbox = React.forwardRef(
 
 IndeterminateCheckbox.displayName = "IndeterminateCheckbox";
 
-const OpenTradesTable: NextPage<IOpenTradesTableProps> = ({
+const OpenTradesTableSetup: NextPage<IOpenTradesTableSetupProps> = ({
   data,
   columns,
 }) => {
@@ -215,36 +214,45 @@ const OpenTradesTable: NextPage<IOpenTradesTableProps> = ({
                 className="w-full divide-y divide-neutral-700"
               >
                 <thead className="bg-primary-500">
-                  {headerGroups.map((headerGroup) => (
-                    <tr {...headerGroup.getHeaderGroupProps()}>
-                      {headerGroup.headers.map((column) => (
-                        <th
-                          {...column.getHeaderProps(
-                            column.getSortByToggleProps()
-                          )}
-                          scope="col"
-                          className="px-2 py-4 text-sm text-left uppercase group sm:text-base text-neutral-100 first:pl-4 last:pr-4"
-                        >
-                          <div className="flex items-center justify-between">
-                            {column.render("Header")}
-                            <span className="pl-2">
-                              {column.isSorted ? (
-                                column.isSortedDesc ? (
-                                  <SortDescendingIcon className="w-4 h-4" />
-                                ) : (
-                                  <SortAscendingIcon className="w-4 h-4" />
-                                )
-                              ) : column.disableSortBy ? (
-                                ""
-                              ) : (
-                                <SelectorIcon className="w-4 h-4 transition duration-200 opacity-0 group-hover:opacity-100" />
-                              )}
-                            </span>
-                          </div>
-                        </th>
-                      ))}
-                    </tr>
-                  ))}
+                  {headerGroups.map((headerGroup) => {
+                    const { key, ...restHeaderGroupProps } =
+                      headerGroup.getHeaderGroupProps();
+                    return (
+                      <tr key={key} {...restHeaderGroupProps}>
+                        {headerGroup.headers.map((column) => {
+                          const { key, ...restColumnProps } =
+                            column.getHeaderProps(
+                              column.getSortByToggleProps()
+                            );
+                          return (
+                            <th
+                              key={key}
+                              {...restColumnProps}
+                              scope="col"
+                              className="px-2 py-4 text-sm text-left uppercase group sm:text-base text-neutral-100 first:pl-4 last:pr-4"
+                            >
+                              <div className="flex items-center justify-between">
+                                {column.render("Header")}
+                                <span className="pl-2">
+                                  {column.isSorted ? (
+                                    column.isSortedDesc ? (
+                                      <SortDescendingIcon className="w-4 h-4" />
+                                    ) : (
+                                      <SortAscendingIcon className="w-4 h-4" />
+                                    )
+                                  ) : column.disableSortBy ? (
+                                    ""
+                                  ) : (
+                                    <SelectorIcon className="w-4 h-4 transition duration-200 opacity-0 group-hover:opacity-100" />
+                                  )}
+                                </span>
+                              </div>
+                            </th>
+                          );
+                        })}
+                      </tr>
+                    );
+                  })}
                 </thead>
                 <tbody
                   {...getTableBodyProps()}
@@ -253,16 +261,19 @@ const OpenTradesTable: NextPage<IOpenTradesTableProps> = ({
                   {page.length > 0 ? (
                     page.map((row, i) => {
                       prepareRow(row);
+                      const { key, ...restRowProps } = row.getRowProps();
                       return (
-                        <tr {...row.getRowProps()}>
+                        <tr key={key} {...restRowProps}>
                           {row.cells.map((cell) => {
+                            const { key, ...restRowProps } = cell.getCellProps({
+                              style: {
+                                maxWidth: cell.column.width,
+                              },
+                            });
                             return (
                               <td
-                                {...cell.getCellProps({
-                                  style: {
-                                    maxWidth: cell.column.width,
-                                  },
-                                })}
+                                key={key}
+                                {...restRowProps}
                                 className="px-2 py-4 overflow-hidden whitespace-nowrap first:pl-4 last:pr-4 text-ellipsis"
                               >
                                 {cell.render("Cell")}
@@ -361,11 +372,11 @@ const OpenTradesTable: NextPage<IOpenTradesTableProps> = ({
   );
 };
 
-interface IOpenTradesProps {
+interface IOpenTradesTableProps {
   data: any;
 }
 
-const OpenTrades: NextPage<IOpenTradesProps> = ({ data }) => {
+const OpenTradesTable: NextPage<IOpenTradesTableProps> = ({ data }) => {
   const columns = React.useMemo(
     () => [
       {
@@ -416,7 +427,9 @@ const OpenTrades: NextPage<IOpenTradesProps> = ({ data }) => {
     ],
     []
   );
-  return <OpenTradesTable columns={columns} data={data}></OpenTradesTable>;
+  return (
+    <OpenTradesTableSetup columns={columns} data={data}></OpenTradesTableSetup>
+  );
 };
 
-export default OpenTrades;
+export default OpenTradesTable;

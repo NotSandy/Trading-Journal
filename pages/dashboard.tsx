@@ -12,9 +12,10 @@ import {
 import TradesMadeGraph from "../components/widgets/TradesMadeChart";
 import MonthlyPNLChart from "../components/widgets/MonthlyPNLChart";
 import PNLChart from "../components/widgets/TotalPNLChart";
-import OpenTrades from "../components/widgets/OpenTrades";
 import { prisma } from "../lib/prisma";
 import TopTrades from "../components/widgets/TopTrades";
+import { format } from "date-fns";
+import OpenTradesTable from "../components/widgets/OpenTradesTable";
 
 const Dashboard = (props: any) => {
   const { data: session, status } = useSession();
@@ -70,7 +71,7 @@ const Dashboard = (props: any) => {
         </div>
         <div className="flex flex-wrap lg:flex-nowrap">
           <div className="flex-col min-w-0 basis-full lg:basis-1/2">
-            <OpenTrades data={trades}></OpenTrades>
+            <OpenTradesTable data={trades}></OpenTradesTable>
           </div>
           <div className="flex-col basis-full lg:basis-1/2">
             <TopTrades></TopTrades>
@@ -107,10 +108,10 @@ export async function getServerSideProps(context: any) {
 
   data.forEach((element: any) => {
     if (element.date) {
-      element.date = element.date.toISOString().substring(0, 10);
+      element.date = format(new Date(element.date), "MM/dd/yy");
     }
     if (element.expiry) {
-      element.expiry = element.expiry.toISOString().substring(0, 10);
+      element.expiry = format(new Date(element.expiry), "MM/dd/yy");
     }
     if (element.strike) {
       element.strike = element.strike.toLocaleString("en-US", {

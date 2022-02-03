@@ -31,7 +31,7 @@ const DeleteTradeModal: NextPage<DeleteTradeModalProps> = ({ id }) => {
       const body = {
         id: id,
       };
-      const res = await fetch("/api/trade", {
+      const res = await fetch(`/api/trade/${id}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),

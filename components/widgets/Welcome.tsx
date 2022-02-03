@@ -20,6 +20,7 @@ const Welcome: NextPage<IWelcomeProps> = ({ userProfilePicture }) => {
               alt="Data"
               layout="fill"
               objectFit="contain"
+              priority
             />
           </div>
         </div>

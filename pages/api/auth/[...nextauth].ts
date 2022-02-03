@@ -1,4 +1,3 @@
-// @ts-nocheck
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import DiscordProvider from "next-auth/providers/discord";
@@ -6,7 +5,7 @@ import TwitterProvider from "next-auth/providers/twitter";
 import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "../../../lib/prisma";
-import nodemailer from 'nodemailer'
+import nodemailer from "nodemailer";
 
 export default NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -14,33 +13,33 @@ export default NextAuth({
     EmailProvider({
       server: process.env.EMAIL_SERVER,
       from: process.env.EMAIL_FROM,
-      async sendVerificationRequest ({
+      async sendVerificationRequest({
         identifier: email,
         url,
-        provider: { server, from }
+        provider: { server, from },
       }) {
-        const { host } = new URL(url)
-        const transport = nodemailer.createTransport(server)
+        const { host } = new URL(url);
+        const transport = nodemailer.createTransport(server);
         await transport.sendMail({
           to: email,
           from,
           subject: `Sign in to ${host}`,
           text: text({ url, host }),
-          html: html({ url, host, email })
-        })
-      }
+          html: html({ url, host, email }),
+        });
+      },
     }),
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
     DiscordProvider({
       clientId: process.env.DISCORD_CLIENT_ID,
       clientSecret: process.env.DISCORD_CLIENT_SECRET,
     }),
     TwitterProvider({
-      clientId: process.env.TWITTER_CLIENT_ID,
-      clientSecret: process.env.TWITTER_CLIENT_SECRET,
+      clientId: process.env.TWITTER_CLIENT_ID as string,
+      clientSecret: process.env.TWITTER_CLIENT_SECRET as string,
     }),
   ],
   secret: process.env.SECRET,
@@ -72,9 +71,17 @@ export default NextAuth({
   },
 });
 
-function html ({ url, host, email }) {
-  const escapedEmail = `${email.replace(/\./g, '&#8203;.')}`
-  const escapedHost = `${host.replace(/\./g, '&#8203;.')}`
+function html({
+  url,
+  host,
+  email,
+}: {
+  url: string;
+  host: string;
+  email: string;
+}) {
+  const escapedEmail = `${email.replace(/\./g, "&#8203;.")}`;
+  const escapedHost = `${host.replace(/\./g, "&#8203;.")}`;
   // Your email template here
   return `
       <body>
@@ -83,10 +90,10 @@ function html ({ url, host, email }) {
         <p>
           <a href="${url}">Sign in to ${escapedHost}</a>
       </body>
-  `
+  `;
 }
 
 // Fallback for non-HTML email clients
-function text ({ url, host }) {
-  return `Sign in to ${host}\n${url}\n\n`
+function text({ url, host }: { url: string; host: string }) {
+  return `Sign in to ${host}\n${url}\n\n`;
 }
