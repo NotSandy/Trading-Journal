@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import React, { MutableRefObject } from "react";
+import React, { MutableRefObject, useState } from "react";
 import {
   useTable,
   useGlobalFilter,
@@ -18,18 +18,15 @@ import {
   SortDescendingIcon,
   SelectorIcon,
   SearchCircleIcon,
+  FilterIcon,
 } from "@heroicons/react/outline";
 import DeleteTradeModal from "./DeleteTradeModal";
 import EditTradeModal from "./EditTradeModal";
 import { StatusBadge } from "../ui/Badge";
 import AddTradeModal from "./AddTradeModal";
-import { Button, PageButton } from "../ui/Button";
+import { Button, DropdownButton, PageButton } from "../ui/Button";
 import Image from "next/image";
-
-interface ITradesTableSetupProps {
-  data: any;
-  columns: any;
-}
+import { format, utcToZonedTime } from "date-fns-tz";
 
 function GlobalFilter({
   preGlobalFilteredRows,
@@ -132,15 +129,23 @@ const IndeterminateCheckbox = React.forwardRef(
 
 IndeterminateCheckbox.displayName = "IndeterminateCheckbox";
 
+interface ITradesTableSetupProps {
+  data: any;
+  columns: any;
+  onTradeTableSetupChangeHandler: any;
+}
+
 const TradesTableSetup: NextPage<ITradesTableSetupProps> = ({
   columns,
   data,
+  onTradeTableSetupChangeHandler,
 }) => {
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
     prepareRow,
+    allColumns,
     page,
     canPreviousPage,
     canNextPage,
@@ -171,35 +176,37 @@ const TradesTableSetup: NextPage<ITradesTableSetupProps> = ({
     useFilters,
     useSortBy,
     usePagination,
-    useRowSelect,
-    (hooks) => {
-      hooks.visibleColumns.push((columns) => [
-        // {
-        //   id: "selection",
-        //   Header: ({ getToggleAllPageRowsSelectedProps }) => (
-        //     <div>
-        //       <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
-        //     </div>
-        //   ),
-        //   Cell: ({ row }) => (
-        //     <div>
-        //       <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
-        //     </div>
-        //   ),
-        // },
-        ...columns,
-      ]);
-    }
+    useRowSelect
+    // (hooks) => {
+    //   hooks.visibleColumns.push((columns) => [
+    //     {
+    //       id: "selection",
+    //       Header: ({ getToggleAllPageRowsSelectedProps }) => (
+    //         <div>
+    //           <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
+    //         </div>
+    //       ),
+    //       Cell: ({ row }) => (
+    //         <div>
+    //           <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+    //         </div>
+    //       ),
+    //     },
+    //     ...columns,
+    //   ]);
+    // }
   );
   return (
     <div className="px-2 mb-4">
-      <div className="relative overflow-hidden rounded-md bg-neutral-800">
+      <div className="relative overflow-x-hidden rounded-md scrollbar-hide bg-neutral-800">
         <div className="flex justify-between bg-primary-500">
           <div className="flex flex-col justify-between p-4">
             <span className="text-lg font-semibold text-neutral-100">
               Your Trades
             </span>
-            <AddTradeModal></AddTradeModal>
+            <AddTradeModal
+              onAddTradeHandler={onTradeTableSetupChangeHandler}
+            ></AddTradeModal>
           </div>
           <div className="relative w-32 h-32 mr-4">
             <Image
@@ -211,13 +218,13 @@ const TradesTableSetup: NextPage<ITradesTableSetupProps> = ({
           </div>
         </div>
         <div className="p-4">
-          <div className="block pb-4 space-x-2 sm:flex sm:justify-between">
+          <div className="block pb-4 gap-x-4 sm:flex sm:justify-between sm:items-center">
             <GlobalFilter
               preGlobalFilteredRows={preGlobalFilteredRows}
               globalFilter={state.globalFilter}
               setGlobalFilter={setGlobalFilter}
             />
-            <div className="block sm:flex sm:space-x-2">
+            <div className="block sm:flex sm:space-x-4">
               {headerGroups.map((headerGroup) =>
                 headerGroup.headers.map((column) =>
                   column.Filter ? (
@@ -230,6 +237,25 @@ const TradesTableSetup: NextPage<ITradesTableSetupProps> = ({
                   ) : null
                 )
               )}
+              <div className="flex justify-end mt-2 sm:mt-0">
+                <DropdownButton Icon={FilterIcon}>
+                  {allColumns.map((column) => {
+                    if (column.id == "actions" || column.id == "ticker") {
+                    } else {
+                      return (
+                        <div key={column.id} className="flex gap-x-2">
+                          <IndeterminateCheckbox
+                            {...column.getToggleHiddenProps()}
+                          />
+                          <span className="capitalize text-neutral-100">
+                            {column.id}
+                          </span>
+                        </div>
+                      );
+                    }
+                  })}
+                </DropdownButton>
+              </div>
             </div>
           </div>
           <div className="overflow-x-auto overflow-y-hidden scrollbar-thumb-neutral-700 scrollbar-track-neutral-900 scrollbar-thin rounded-t-md">
@@ -251,9 +277,9 @@ const TradesTableSetup: NextPage<ITradesTableSetupProps> = ({
                             key={key}
                             {...restColumnProps}
                             scope="col"
-                            className="px-2 py-4 text-sm text-left uppercase group sm:text-base text-neutral-100 first:pl-4 last:pr-4"
+                            className="px-2 py-4 group first:pl-4 last:pr-4"
                           >
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between text-sm uppercase text-neutral-100">
                               {column.render("Header")}
                               <span className="pl-2">
                                 {column.isSorted ? (
@@ -285,7 +311,13 @@ const TradesTableSetup: NextPage<ITradesTableSetupProps> = ({
                     prepareRow(row);
                     const { key, ...restRowProps } = row.getRowProps();
                     return (
-                      <tr key={key} {...restRowProps}>
+                      <tr
+                        key={key}
+                        {...restRowProps}
+                        className={`${
+                          i % 2 === 0 ? "bg-neutral-800" : "bg-neutral-800"
+                        }`}
+                      >
                         {row.cells.map((cell) => {
                           const { key, ...restRowProps } = cell.getCellProps({
                             style: {
@@ -296,7 +328,7 @@ const TradesTableSetup: NextPage<ITradesTableSetupProps> = ({
                             <td
                               key={key}
                               {...restRowProps}
-                              className="px-2 py-4 overflow-hidden whitespace-nowrap first:pl-4 last:pr-4 text-ellipsis"
+                              className="p-2 overflow-hidden whitespace-nowrap first:pl-4 last:pr-4 text-ellipsis"
                             >
                               {cell.render("Cell")}
                             </td>
@@ -408,58 +440,178 @@ const TradesTableSetup: NextPage<ITradesTableSetupProps> = ({
 
 interface ITradesTableProps {
   data: any;
+  onTradeTableChangeHandler: any;
 }
 
-const TradesTable: NextPage<ITradesTableProps> = ({ data }) => {
+const TradesTable: NextPage<ITradesTableProps> = ({
+  data,
+  onTradeTableChangeHandler,
+}) => {
   const columns = React.useMemo(
     () => [
       {
         Header: "Date",
         accessor: "date",
+        Cell: ({ value }: { value: Date }) => {
+          if (value == null) {
+            return null;
+          } else {
+            const stringValue = format(
+              utcToZonedTime(new Date(value), "UTC"),
+              "LLL dd, yyyy"
+            );
+            return <span>{stringValue}</span>;
+          }
+        },
       },
       {
         Header: "Ticker",
         accessor: "ticker",
         Filter: SelectColumnFilter,
         filter: "includes",
+        Cell: ({ value }: { value: string }) => {
+          if (value == null) {
+            return null;
+          } else {
+            return <span className="font-bold text-primary-100">{value}</span>;
+          }
+        },
       },
       {
         Header: "Expiry",
         accessor: "expiry",
+        Cell: ({ value }: { value: Date }) => {
+          if (value == null) {
+            return null;
+          } else {
+            const stringValue = format(
+              utcToZonedTime(new Date(value), "UTC"),
+              "LLL dd, yyyy"
+            );
+            return <span>{stringValue}</span>;
+          }
+        },
       },
       {
         Header: "Strike",
         accessor: "strike",
+        Cell: ({ value }: { value: Number }) => {
+          if (value == null) {
+            return null;
+          } else {
+            const stringValue = value.toLocaleString("en-US", {
+              style: "currency",
+              currency: "USD",
+            });
+            return <span>{stringValue}</span>;
+          }
+        },
       },
       {
         Header: "Strategy",
         accessor: "strategy",
         Filter: SelectColumnFilter,
         filter: "includes",
+        Cell: StatusBadge,
       },
       {
-        Header: "Quantity",
+        Header: "QTY",
         accessor: "quantity",
       },
       {
         Header: "Entry",
         accessor: "entry",
+        Cell: ({ value }: { value: Number }) => {
+          if (value == null) {
+            return null;
+          } else {
+            const stringValue = value.toLocaleString("en-US", {
+              style: "currency",
+              currency: "USD",
+            });
+            return <span>{stringValue}</span>;
+          }
+        },
       },
       {
         Header: "Exit",
         accessor: "exit",
+        Cell: ({ value }: { value: Number }) => {
+          if (value == null) {
+            return null;
+          } else {
+            const stringValue = value.toLocaleString("en-US", {
+              style: "currency",
+              currency: "USD",
+            });
+            return <span>{stringValue}</span>;
+          }
+        },
       },
       {
         Header: "Premium",
         accessor: "premium",
+        Cell: ({ value }: { value: Number }) => {
+          if (value == null) {
+            return null;
+          } else {
+            const stringValue = value.toLocaleString("en-US", {
+              style: "currency",
+              currency: "USD",
+            });
+            return <span>{stringValue}</span>;
+          }
+        },
       },
       {
         Header: "PnL",
         accessor: "pnl",
+        Cell: ({ value }: { value: Number }) => {
+          const statusColor = (value: Number) => {
+            if (value < 0) {
+              return "text-danger-500";
+            } else if (value == 0) {
+              return "text-neutral-500";
+            } else {
+              return "text-success-500";
+            }
+          };
+          if (value == null) {
+            return null;
+          } else {
+            const stringValue = value.toLocaleString("en-US", {
+              style: "currency",
+              currency: "USD",
+            });
+            return (
+              <span className={`${statusColor(value)}`}>{stringValue}</span>
+            );
+          }
+        },
       },
       {
         Header: "%",
         accessor: "percent",
+        Cell: ({ value }: { value: Number }) => {
+          const statusColor = (value: Number) => {
+            if (value < 0) {
+              return "text-danger-500";
+            } else if (value == 0) {
+              return "text-neutral-500";
+            } else {
+              return "text-success-500";
+            }
+          };
+
+          if (value == null) {
+            return null;
+          } else {
+            const stringValue = value.toFixed(0) + "%";
+            return (
+              <span className={`${statusColor(value)}`}>{stringValue}</span>
+            );
+          }
+        },
       },
       {
         Header: "Status",
@@ -480,15 +632,27 @@ const TradesTable: NextPage<ITradesTableProps> = ({ data }) => {
         disableSortBy: true,
         Cell: ({ row }: { row: any }) => (
           <div className="space-x-2">
-            <EditTradeModal id={row.original.id}></EditTradeModal>
-            <DeleteTradeModal id={row.original.id}></DeleteTradeModal>
+            <EditTradeModal
+              id={row.original.id}
+              onEditTradeHandler={onTradeTableChangeHandler}
+            ></EditTradeModal>
+            <DeleteTradeModal
+              id={row.original.id}
+              onDeleteTradeHandler={onTradeTableChangeHandler}
+            ></DeleteTradeModal>
           </div>
         ),
       },
     ],
     []
   );
-  return <TradesTableSetup columns={columns} data={data}></TradesTableSetup>;
+  return (
+    <TradesTableSetup
+      columns={columns}
+      data={data}
+      onTradeTableSetupChangeHandler={onTradeTableChangeHandler}
+    ></TradesTableSetup>
+  );
 };
 
 export default TradesTable;

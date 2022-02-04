@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useState } from "react";
 import { useSession, getSession } from "next-auth/react";
 import Layout from "../components/layouts/Layout";
 import PageTitle from "../components/ui/PageTitle";
@@ -14,13 +14,18 @@ import MonthlyPNLChart from "../components/widgets/MonthlyPNLChart";
 import PNLChart from "../components/widgets/TotalPNLChart";
 import { prisma } from "../lib/prisma";
 import TopTrades from "../components/widgets/TopTrades";
-import { format } from "date-fns";
+import { format, utcToZonedTime } from "date-fns-tz";
 import OpenTradesTable from "../components/widgets/OpenTradesTable";
 
 const Dashboard = (props: any) => {
   const { data: session, status } = useSession();
-  let { trades } = props;
-  trades = JSON.parse(trades);
+  const [trades, setTrades] = useState(JSON.parse(props.trades));
+
+  const tradesChangeHandler = () => {
+    fetch("/api/trades/open/")
+      .then((res) => res.json())
+      .then((res) => setTrades(res));
+  };
 
   if (status === "loading") {
     return <h1>Loading...</h1>;
@@ -71,7 +76,10 @@ const Dashboard = (props: any) => {
         </div>
         <div className="flex flex-wrap lg:flex-nowrap">
           <div className="flex-col min-w-0 basis-full lg:basis-1/2">
-            <OpenTradesTable data={trades}></OpenTradesTable>
+            <OpenTradesTable
+              data={trades}
+              onOpenTradeTableChangeHandler={tradesChangeHandler}
+            ></OpenTradesTable>
           </div>
           <div className="flex-col basis-full lg:basis-1/2">
             <TopTrades></TopTrades>
@@ -104,21 +112,6 @@ export async function getServerSideProps(context: any) {
       user: { email: session?.user?.email },
       status: "open",
     },
-  });
-
-  data.forEach((element: any) => {
-    if (element.date) {
-      element.date = format(new Date(element.date), "MM/dd/yy");
-    }
-    if (element.expiry) {
-      element.expiry = format(new Date(element.expiry), "MM/dd/yy");
-    }
-    if (element.strike) {
-      element.strike = element.strike.toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD",
-      });
-    }
   });
 
   const trades = JSON.stringify(data);

@@ -1,9 +1,13 @@
 import { Dialog, Transition } from "@headlessui/react";
+import { NextPage } from "next";
 import React, { Fragment, useState } from "react";
 import { Button } from "../ui/Button";
-import { useRouter } from "next/router";
 
-const AddTradeModal = () => {
+interface AddTradeModalProps {
+  onAddTradeHandler: any;
+}
+
+const AddTradeModal: NextPage<AddTradeModalProps> = ({ onAddTradeHandler }) => {
   let [addTradeIsOpen, setAddTradeIsOpen] = useState(false);
   const [date, setDate] = useState<Date | null>(new Date());
   const [time, setTime] = useState<Date | null>(new Date());
@@ -36,12 +40,6 @@ const AddTradeModal = () => {
     setNotes("");
   }
 
-  const router = useRouter();
-
-  const refreshData = () => {
-    router.replace(router.asPath);
-  };
-
   const submitTrade = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     try {
@@ -57,14 +55,12 @@ const AddTradeModal = () => {
         exit,
         notes,
       };
-      const res = await fetch("/api/trade", {
+      const res = await fetch("/api/trades", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      if (res.status < 300) {
-        refreshData();
-      }
+      onAddTradeHandler();
       await closeAddTradeModal();
     } catch (error) {
       console.error(error);
@@ -73,7 +69,11 @@ const AddTradeModal = () => {
 
   return (
     <div>
-      <Button type="button" onClick={openAddTradeModal} className="whitespace-nowrap">
+      <Button
+        type="button"
+        onClick={openAddTradeModal}
+        className="whitespace-nowrap"
+      >
         Add Trade
       </Button>
 
@@ -152,7 +152,9 @@ const AddTradeModal = () => {
                         type="text"
                         className="block w-full px-4 uppercase transition duration-500 border-0 rounded-md shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 bg-neutral-900 text-neutral-100"
                         placeholder="Ticker"
-                        onChange={(e) => setTicker(e.target.value.toUpperCase())}
+                        onChange={(e) =>
+                          setTicker(e.target.value.toUpperCase())
+                        }
                         value={ticker}
                         required
                       />

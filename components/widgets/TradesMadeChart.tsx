@@ -88,7 +88,7 @@ const data = {
       data: [65, 59, 20, 81, 56, 55, 40, 45, 67, 100, 57, 21, 12],
     },
     {
-      label: "Lost",
+      label: "Loss",
       backgroundColor: "#EC747B",
       hoverBackgroundColor: "#E7515A",
       data: [65, 59, 20, 81, 56, 55, 40, 45, 67, 100, 57, 21, 12],

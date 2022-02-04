@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { NextPage } from "next";
-import { Menu, Transition } from "@headlessui/react";
+import { Menu } from "@headlessui/react";
 
 interface Props {
   Icon: any;
@@ -8,12 +8,6 @@ interface Props {
 }
 
 const HeaderItem: NextPage<Props> = ({ Icon, children }) => {
-  const [openHeaderDropdown, setOpenHeaderDropdown] = useState(false);
-
-  const openHeaderDropdownHandler = () => {
-    setOpenHeaderDropdown(!openHeaderDropdown);
-  };
-
   return (
     <Menu>
       <div className="relative">

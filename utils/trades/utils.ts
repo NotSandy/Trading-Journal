@@ -68,11 +68,13 @@ function calcPercent(entry: number, exit: number) {
 }
 
 function calcStatus(exit: number, pnl: number) {
-  if (exit) {
-    if (pnl >= 0) {
+  if (exit != null) {
+    if (pnl > 0) {
       return "win";
+    } else if (pnl < 0) {
+      return "loss";
     } else {
-      return "lost";
+      return "tie";
     }
   } else {
     return "open";

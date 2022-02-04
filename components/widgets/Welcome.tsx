@@ -35,11 +35,11 @@ const Welcome: NextPage<IWelcomeProps> = ({ userProfilePicture }) => {
                 className="rounded-full"
               />
             </div>
-            <div className="-mt-8 text-neutral-100">
+            {/* <div className="-mt-8 text-neutral-100">
               <span>
                 Rank: <span className="text-neutral-300">Novice Trader</span>
               </span>
-            </div>
+            </div> */}
           </div>
           <div className="flex text-left gap-x-4 basis-full">
             <div className="flex flex-col basis-1/3">

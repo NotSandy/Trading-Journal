@@ -1,14 +1,17 @@
 import { Dialog, Transition } from "@headlessui/react";
 import React, { Fragment, useState } from "react";
 import { Button } from "../ui/Button";
-import { useRouter } from "next/router";
 import { NextPage } from "next";
 
 interface EditTradeModalProps {
   id: string;
+  onEditTradeHandler: any;
 }
 
-const EditTradeModal: NextPage<EditTradeModalProps> = ({ id }) => {
+const EditTradeModal: NextPage<EditTradeModalProps> = ({
+  id,
+  onEditTradeHandler,
+}) => {
   let [editTradeIsOpen, setEditTradeIsOpen] = useState(false);
   const [date, setDate] = useState<Date | null>(new Date());
   const [time, setTime] = useState<Date | null>(new Date());
@@ -30,15 +33,9 @@ const EditTradeModal: NextPage<EditTradeModalProps> = ({ id }) => {
     getTrade(id);
   }
 
-  const router = useRouter();
-
-  const refreshData = () => {
-    router.replace(router.asPath);
-  };
-
   const getTrade = async (id: string) => {
     try {
-      const res = await fetch(`/api/trade/${id}`, {
+      const res = await fetch(`/api/trades/${id}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -73,14 +70,12 @@ const EditTradeModal: NextPage<EditTradeModalProps> = ({ id }) => {
         exit,
         notes,
       };
-      const res = await fetch(`/api/trade/${id}`, {
+      const res = await fetch(`/api/trades/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      if (res.status < 300) {
-        refreshData();
-      }
+      onEditTradeHandler();
       await closeEditTradeModal();
     } catch (error) {
       console.error(error);

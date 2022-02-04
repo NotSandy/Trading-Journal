@@ -1,15 +1,21 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useState } from "react";
 import { useSession, getSession } from "next-auth/react";
 import Layout from "../components/layouts/Layout";
 import PageTitle from "../components/ui/PageTitle";
 import TradesTable from "../components/trades/TradesTable";
 import { prisma } from "../lib/prisma";
-import { format } from "date-fns";
+import { format, utcToZonedTime } from "date-fns-tz";
 
 const Trades = (props: any) => {
   const { data: session, status } = useSession();
-  let { trades } = props;
-  trades = JSON.parse(trades);
+
+  const [trades, setTrades] = useState(JSON.parse(props.trades));
+
+  const tradesChangeHandler = () => {
+    fetch("/api/trades/")
+      .then((res) => res.json())
+      .then((res) => setTrades(res));
+  };
 
   if (status === "loading") {
     return <h1>Loading...</h1>;
@@ -19,7 +25,10 @@ const Trades = (props: any) => {
     return (
       <div>
         <PageTitle title="Trades" />
-        <TradesTable data={trades} />
+        <TradesTable
+          data={trades}
+          onTradeTableChangeHandler={tradesChangeHandler}
+        />
       </div>
     );
   }
@@ -47,48 +56,6 @@ export async function getServerSideProps(context: any) {
     where: {
       user: { email: session?.user?.email },
     },
-  });
-
-  data.forEach((element: any) => {
-    if (element.date) {
-      element.date = format(new Date(element.date), "MM/dd/yy");
-    }
-    if (element.expiry) {
-      element.expiry = format(new Date(element.expiry), "MM/dd/yy");
-    }
-    if (element.strike) {
-      element.strike = element.strike.toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD",
-      });
-    }
-    if (element.entry) {
-      element.entry = element.entry.toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD",
-      });
-    }
-    if (element.exit) {
-      element.exit = element.exit.toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD",
-      });
-    }
-    if (element.premium) {
-      element.premium = element.premium.toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD",
-      });
-    }
-    if (element.pnl) {
-      element.pnl = element.pnl.toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD",
-      });
-    }
-    if (element.percent) {
-      element.percent = element.percent.toFixed(0) + "%";
-    }
   });
 
   const trades = JSON.stringify(data);

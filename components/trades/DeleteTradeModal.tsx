@@ -1,14 +1,14 @@
 import { Dialog, Transition } from "@headlessui/react";
 import React, { Fragment, useState } from "react";
 import { Button } from "../ui/Button";
-import { useRouter } from "next/router";
 import { NextPage } from "next";
 
 interface DeleteTradeModalProps {
   id: string;
+  onDeleteTradeHandler: any;
 }
 
-const DeleteTradeModal: NextPage<DeleteTradeModalProps> = ({ id }) => {
+const DeleteTradeModal: NextPage<DeleteTradeModalProps> = ({ id, onDeleteTradeHandler}) => {
   let [deleteTradeIsOpen, setDeleteTradeIsOpen] = useState(false);
 
   function closeDeleteTradeModal() {
@@ -19,26 +19,18 @@ const DeleteTradeModal: NextPage<DeleteTradeModalProps> = ({ id }) => {
     setDeleteTradeIsOpen(true);
   }
 
-  const router = useRouter();
-
-  const refreshData = () => {
-    router.replace(router.asPath);
-  };
-
   const deleteTrade = async (e: React.SyntheticEvent, id: string) => {
     e.preventDefault();
     try {
       const body = {
         id: id,
       };
-      const res = await fetch(`/api/trade/${id}`, {
+      const res = await fetch(`/api/trades/${id}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      if (res.status < 300) {
-        refreshData();
-      }
+      onDeleteTradeHandler();
       await closeDeleteTradeModal();
     } catch (error) {
       console.error(error);

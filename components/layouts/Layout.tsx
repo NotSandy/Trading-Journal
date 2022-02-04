@@ -12,8 +12,10 @@ const Layout = ({ children }: { children: any }) => {
   return (
     <React.Fragment>
       <Header openNav={openNavHandler} />
-      <Navbar active={openNav} />
-      <main className="min-h-screen px-2 pt-20 pb-8 overflow-hidden sm:px-6 sm:pt-24 sm:pb-12 md:pl-24 md:-ml-2">{children}</main>
+      <Navbar active={openNav} onClickNavbarHandler={openNavHandler} />
+      <main className="min-h-screen px-2 pt-20 pb-8 overflow-hidden sm:px-6 sm:pt-24 sm:pb-12 md:pl-24 md:-ml-2">
+        {children}
+      </main>
       <Footer />
     </React.Fragment>
   );

@@ -18,17 +18,14 @@ import {
   SortDescendingIcon,
   SelectorIcon,
   SearchCircleIcon,
+  FilterIcon,
 } from "@heroicons/react/outline";
 import DeleteTradeModal from "../trades/DeleteTradeModal";
 import EditTradeModal from "../trades/EditTradeModal";
 import { StatusBadge } from "../ui/Badge";
 import AddTradeModal from "../trades/AddTradeModal";
-import { Button, PageButton } from "../ui/Button";
-
-interface IOpenTradesTableSetupProps {
-  data: any;
-  columns: any;
-}
+import { Button, DropdownButton, PageButton } from "../ui/Button";
+import { format, utcToZonedTime } from "date-fns-tz";
 
 function GlobalFilter({
   preGlobalFilteredRows,
@@ -119,7 +116,7 @@ const IndeterminateCheckbox = React.forwardRef(
     return (
       <div>
         <input
-          className="transition duration-200 border-0 bg-neutral-900 focus:outline-none focus:ring-0 focus:border-0 text-primary-500 focus:ring-offset-0"
+          className="transition duration-200 border-0 bg-neutral-800 focus:outline-none focus:ring-0 focus:border-0 text-primary-500 focus:ring-offset-0"
           type="checkbox"
           ref={resolvedRef as MutableRefObject<any>}
           {...rest}
@@ -131,15 +128,23 @@ const IndeterminateCheckbox = React.forwardRef(
 
 IndeterminateCheckbox.displayName = "IndeterminateCheckbox";
 
+interface IOpenTradesTableSetupProps {
+  data: any;
+  columns: any;
+  onOpenTradeTableSetupChangeHandler: any;
+}
+
 const OpenTradesTableSetup: NextPage<IOpenTradesTableSetupProps> = ({
   data,
   columns,
+  onOpenTradeTableSetupChangeHandler,
 }) => {
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
     prepareRow,
+    allColumns,
     page,
     canPreviousPage,
     canNextPage,
@@ -170,29 +175,29 @@ const OpenTradesTableSetup: NextPage<IOpenTradesTableSetupProps> = ({
     useFilters,
     useSortBy,
     usePagination,
-    useRowSelect,
-    (hooks) => {
-      hooks.visibleColumns.push((columns) => [
-        // {
-        //   id: "selection",
-        //   Header: ({ getToggleAllPageRowsSelectedProps }) => (
-        //     <div>
-        //       <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
-        //     </div>
-        //   ),
-        //   Cell: ({ row }) => (
-        //     <div>
-        //       <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
-        //     </div>
-        //   ),
-        // },
-        ...columns,
-      ]);
-    }
+    useRowSelect
+    // (hooks) => {
+    //   hooks.visibleColumns.push((columns) => [
+    //     {
+    //       id: "selection",
+    //       Header: ({ getToggleAllPageRowsSelectedProps }) => (
+    //         <div>
+    //           <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
+    //         </div>
+    //       ),
+    //       Cell: ({ row }) => (
+    //         <div>
+    //           <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+    //         </div>
+    //       ),
+    //     },
+    //     ...columns,
+    //   ]);
+    // }
   );
   return (
     <div className="px-2 mb-4">
-      <div className="relative overflow-hidden rounded-md bg-neutral-800">
+      <div className="relative overflow-hidden rounded-md scrollbar-hide bg-neutral-800">
         <div className="flex flex-wrap items-center justify-center p-4 gap-y-4">
           <div className="basis-full">
             <div className="text-lg font-bold text-neutral-100">
@@ -206,7 +211,28 @@ const OpenTradesTableSetup: NextPage<IOpenTradesTableSetupProps> = ({
                 globalFilter={state.globalFilter}
                 setGlobalFilter={setGlobalFilter}
               />
-              <AddTradeModal></AddTradeModal>
+              <div className="flex items-center gap-x-2">
+                <AddTradeModal
+                  onAddTradeHandler={onOpenTradeTableSetupChangeHandler}
+                ></AddTradeModal>
+                <DropdownButton Icon={FilterIcon}>
+                  {allColumns.map((column) => {
+                    if (column.id == "actions" || column.id == "ticker") {
+                    } else {
+                      return (
+                        <div key={column.id} className="flex gap-x-2">
+                          <IndeterminateCheckbox
+                            {...column.getToggleHiddenProps()}
+                          />
+                          <span className="capitalize text-neutral-100">
+                            {column.id}
+                          </span>
+                        </div>
+                      );
+                    }
+                  })}
+                </DropdownButton>
+              </div>
             </div>
             <div className="overflow-x-auto overflow-y-hidden basis-full scrollbar-thumb-neutral-700 scrollbar-track-neutral-900 scrollbar-thin rounded-t-md">
               <table
@@ -229,9 +255,9 @@ const OpenTradesTableSetup: NextPage<IOpenTradesTableSetupProps> = ({
                               key={key}
                               {...restColumnProps}
                               scope="col"
-                              className="px-2 py-4 text-sm text-left uppercase group sm:text-base text-neutral-100 first:pl-4 last:pr-4"
+                              className="px-2 py-4 group first:pl-4 last:pr-4"
                             >
-                              <div className="flex items-center justify-between">
+                              <div className="flex items-center justify-between text-sm uppercase text-neutral-100">
                                 {column.render("Header")}
                                 <span className="pl-2">
                                   {column.isSorted ? (
@@ -263,7 +289,13 @@ const OpenTradesTableSetup: NextPage<IOpenTradesTableSetupProps> = ({
                       prepareRow(row);
                       const { key, ...restRowProps } = row.getRowProps();
                       return (
-                        <tr key={key} {...restRowProps}>
+                        <tr
+                          key={key}
+                          {...restRowProps}
+                          className={`${
+                            i % 2 === 0 ? "bg-neutral-800" : "bg-neutral-800"
+                          }`}
+                        >
                           {row.cells.map((cell) => {
                             const { key, ...restRowProps } = cell.getCellProps({
                               style: {
@@ -274,7 +306,7 @@ const OpenTradesTableSetup: NextPage<IOpenTradesTableSetupProps> = ({
                               <td
                                 key={key}
                                 {...restRowProps}
-                                className="px-2 py-4 overflow-hidden whitespace-nowrap first:pl-4 last:pr-4 text-ellipsis"
+                                className="p-2 overflow-hidden whitespace-nowrap first:pl-4 last:pr-4 text-ellipsis"
                               >
                                 {cell.render("Cell")}
                               </td>
@@ -374,32 +406,79 @@ const OpenTradesTableSetup: NextPage<IOpenTradesTableSetupProps> = ({
 
 interface IOpenTradesTableProps {
   data: any;
+  onOpenTradeTableChangeHandler: any;
 }
 
-const OpenTradesTable: NextPage<IOpenTradesTableProps> = ({ data }) => {
+const OpenTradesTable: NextPage<IOpenTradesTableProps> = ({
+  data,
+  onOpenTradeTableChangeHandler,
+}) => {
   const columns = React.useMemo(
     () => [
       {
         Header: "Date",
         accessor: "date",
+        Cell: ({ value }: { value: Date }) => {
+          if (value == null) {
+            return null;
+          } else {
+            const stringValue = format(
+              utcToZonedTime(new Date(value), "UTC"),
+              "LLL dd, yyyy"
+            );
+            return <span>{stringValue}</span>;
+          }
+        },
       },
       {
         Header: "Ticker",
         accessor: "ticker",
+        Filter: SelectColumnFilter,
         filter: "includes",
+        Cell: ({ value }: { value: string }) => {
+          if (value == null) {
+            return null;
+          } else {
+            return <span className="font-bold text-primary-100">{value}</span>;
+          }
+        },
       },
       {
         Header: "Expiry",
         accessor: "expiry",
+        Cell: ({ value }: { value: Date }) => {
+          if (value == null) {
+            return null;
+          } else {
+            const stringValue = format(
+              utcToZonedTime(new Date(value), "UTC"),
+              "LLL dd, yyyy"
+            );
+            return <span>{stringValue}</span>;
+          }
+        },
       },
       {
         Header: "Strike",
         accessor: "strike",
+        Cell: ({ value }: { value: Number }) => {
+          if (value == null) {
+            return null;
+          } else {
+            const stringValue = value.toLocaleString("en-US", {
+              style: "currency",
+              currency: "USD",
+            });
+            return <span>{stringValue}</span>;
+          }
+        },
       },
       {
         Header: "Strategy",
         accessor: "strategy",
+        Filter: SelectColumnFilter,
         filter: "includes",
+        Cell: StatusBadge,
       },
       {
         Header: "Status",
@@ -419,8 +498,14 @@ const OpenTradesTable: NextPage<IOpenTradesTableProps> = ({ data }) => {
         disableSortBy: true,
         Cell: ({ row }: { row: any }) => (
           <div className="space-x-2">
-            <EditTradeModal id={row.original.id}></EditTradeModal>
-            <DeleteTradeModal id={row.original.id}></DeleteTradeModal>
+            <EditTradeModal
+              id={row.original.id}
+              onEditTradeHandler={onOpenTradeTableChangeHandler}
+            ></EditTradeModal>
+            <DeleteTradeModal
+              id={row.original.id}
+              onDeleteTradeHandler={onOpenTradeTableChangeHandler}
+            ></DeleteTradeModal>
           </div>
         ),
       },
@@ -428,7 +513,11 @@ const OpenTradesTable: NextPage<IOpenTradesTableProps> = ({ data }) => {
     []
   );
   return (
-    <OpenTradesTableSetup columns={columns} data={data}></OpenTradesTableSetup>
+    <OpenTradesTableSetup
+      columns={columns}
+      data={data}
+      onOpenTradeTableSetupChangeHandler={onOpenTradeTableChangeHandler}
+    ></OpenTradesTableSetup>
   );
 };
 

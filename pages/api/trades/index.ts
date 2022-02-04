@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
 import { prisma } from "../../../lib/prisma";
 import { initializeTrade } from "../../../utils/trades/utils";
+import { format, utcToZonedTime } from "date-fns-tz";
 
 export default async function handle(
   req: NextApiRequest,
@@ -9,6 +10,8 @@ export default async function handle(
 ) {
   if (req.method === "POST") {
     handlePOST(req, res);
+  } else if (req.method === "GET") {
+    handleGET(req, res);
   } else {
     res.status(405).end();
   }
@@ -40,5 +43,19 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
     },
   });
   res.json(trade);
+  res.status(200).end();
+}
+
+// GET /api/trade
+async function handleGET(req: NextApiRequest, res: NextApiResponse) {
+  const session = await getSession({ req });
+  const data = await prisma.trade.findMany({
+    where: {
+      user: { email: session?.user?.email },
+    },
+  });
+
+  const trades = JSON.stringify(data);
+  res.json(trades);
   res.status(200).end();
 }

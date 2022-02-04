@@ -28,7 +28,7 @@ const options = {
   plugins: {
     title: {
       display: true,
-      text: "Profit & Lost",
+      text: "Profit & Loss",
     },
     legend: {
       display: false,
@@ -45,7 +45,7 @@ const options = {
 };
 
 const data = {
-  labels: ["Profit", "Lost"],
+  labels: ["Profit", "Loss"],
   datasets: [
     {
       label: "Win",

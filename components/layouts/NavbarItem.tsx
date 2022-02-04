@@ -2,15 +2,17 @@ import React from "react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 
-interface Props {
+interface INavbarItemProps {
   Icon: any;
   path: string;
+  onClickNavbarItemHandler: any;
 }
 
-const NavbarItem: NextPage<Props> = ({ Icon, path }) => {
+const NavbarItem: NextPage<INavbarItemProps> = ({ Icon, path, onClickNavbarItemHandler }) => {
   const router = useRouter();
   const redirectHandler = (e: any) => {
     e.preventDefault();
+    onClickNavbarItemHandler();
     router.push(path);
   };
   return (

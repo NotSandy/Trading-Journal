@@ -30,7 +30,7 @@ const TopTrades = () => {
                     <span>AMD $140.00</span>
                   </div>
                   <div className="text-neutral-300">
-                    <span>2022-02-18 Call</span>
+                    <span>Jan 31, 2022 Call</span>
                   </div>
                 </div>
               </div>
