@@ -8,7 +8,7 @@ const Footer = () => {
         <div className="flex items-center justify-center w-16 h-8">
           <HeartIcon className="w-4 h-4" />
         </div>
-        <div className="pr-4">
+        <div className="pr-4 truncate">
           <span>© 2022 Sandy Liu. All Rights Reserved.</span>
         </div>
       </div>

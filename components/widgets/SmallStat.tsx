@@ -14,10 +14,10 @@ const SmallStat: NextPage<ISmallStatProps> = ({title, value, Icon}) => {
         <div className="flex flex-wrap items-center p-4">
           <div className="flex items-center justify-between basis-full">
             <div className="flex-col space-y-4">
-              <div className="text-neutral-300">
+              <div className="text-base xl:text-lg text-neutral-300">
                 <span>{title}</span>
               </div>
-              <div className="text-xl text-neutral-100">
+              <div className="text-base xl:text-lg text-neutral-100">
                 <span>{value}</span>
               </div>
             </div>

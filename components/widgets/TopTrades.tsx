@@ -43,7 +43,7 @@ const TopTrades = () => {
                       />
                     </div>
                     <div className="flex-col whitespace-nowrap">
-                      <div className="font-semibold text-neutral-100">
+                      <div className="text-sm font-semibold text-neutral-100 sm:text-base">
                         <span>
                           {trade.ticker}{" "}
                           {trade.strike.toLocaleString("en-US", {
@@ -52,7 +52,7 @@ const TopTrades = () => {
                           })}
                         </span>
                       </div>
-                      <div className="text-neutral-300">
+                      <div className="text-sm text-neutral-300 sm:text-base">
                         <span>
                           {format(
                             utcToZonedTime(new Date(trade.date), "UTC"),
@@ -64,7 +64,7 @@ const TopTrades = () => {
                     </div>
                   </div>
                   <div className="text-right basis-1/3">
-                    <span className="font-semibold text-success-300">
+                    <span className="text-sm font-semibold sm:text-base text-success-300">
                       {trade?.pnl?.toLocaleString("en-US", {
                         style: "currency",
                         currency: "USD",

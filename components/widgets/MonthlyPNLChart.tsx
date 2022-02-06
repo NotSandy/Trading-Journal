@@ -71,11 +71,11 @@ const MonthlyPNLChart = () => {
           </div>
           <div className="flex basis-full gap-x-4">
             <div className="basis-1/2">
-              <div className="flex-col space-y-4">
+              <div className="flex-col space-y-2">
                 <div className="text-neutral-300">
                   <span>You are up</span>
                 </div>
-                <div className="text-2xl text-neutral-100">
+                <div className="text-lg xl:text-xl text-neutral-100">
                   <span>$1,203</span>
                 </div>
                 <div className="text-neutral-300">
