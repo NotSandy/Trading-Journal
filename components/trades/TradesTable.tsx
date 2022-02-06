@@ -258,7 +258,7 @@ const TradesTableSetup: NextPage<ITradesTableSetupProps> = ({
               </div>
             </div>
           </div>
-          <div className="overflow-x-auto overflow-y-hidden scrollbar-thumb-neutral-700 scrollbar-track-neutral-900 scrollbar-thin rounded-t-md">
+          <div className="pb-2 overflow-x-auto overflow-y-hidden scrollbar-thumb-neutral-700 scrollbar-track-neutral-900 scrollbar-thin rounded-t-md">
             <table
               {...getTableProps()}
               className="min-w-full divide-y divide-neutral-700"
@@ -495,6 +495,7 @@ const TradesTable: NextPage<ITradesTableProps> = ({
       {
         Header: "Strike",
         accessor: "strike",
+        sortType: compareNumericString,
         Cell: ({ value }: { value: Number }) => {
           if (value == null) {
             return null;
@@ -521,6 +522,7 @@ const TradesTable: NextPage<ITradesTableProps> = ({
       {
         Header: "Entry",
         accessor: "entry",
+        sortType: compareNumericString,
         Cell: ({ value }: { value: Number }) => {
           if (value == null) {
             return null;
@@ -536,6 +538,7 @@ const TradesTable: NextPage<ITradesTableProps> = ({
       {
         Header: "Exit",
         accessor: "exit",
+        sortType: compareNumericString,
         Cell: ({ value }: { value: Number }) => {
           if (value == null) {
             return null;
@@ -551,6 +554,7 @@ const TradesTable: NextPage<ITradesTableProps> = ({
       {
         Header: "Premium",
         accessor: "premium",
+        sortType: compareNumericString,
         Cell: ({ value }: { value: Number }) => {
           if (value == null) {
             return null;
@@ -566,7 +570,9 @@ const TradesTable: NextPage<ITradesTableProps> = ({
       {
         Header: "PnL",
         accessor: "pnl",
+        sortType: compareNumericString,
         Cell: ({ value }: { value: Number }) => {
+          console.log(value);
           const statusColor = (value: Number) => {
             if (value < 0) {
               return "text-danger-500";
@@ -592,6 +598,7 @@ const TradesTable: NextPage<ITradesTableProps> = ({
       {
         Header: "%",
         accessor: "percent",
+        sortType: compareNumericString,
         Cell: ({ value }: { value: Number }) => {
           const statusColor = (value: Number) => {
             if (value < 0) {
@@ -606,7 +613,7 @@ const TradesTable: NextPage<ITradesTableProps> = ({
           if (value == null) {
             return null;
           } else {
-            const stringValue = value.toFixed(0) + "%";
+            const stringValue = value.toFixed(0) + " %";
             return (
               <span className={`${statusColor(value)}`}>{stringValue}</span>
             );
@@ -644,8 +651,24 @@ const TradesTable: NextPage<ITradesTableProps> = ({
         ),
       },
     ],
-    []
+    [onTradeTableChangeHandler]
   );
+
+  function compareNumericString(rowA: any, rowB: any, id: any, desc: any) {
+    let a = Number.parseFloat(rowA.values[id]);
+    let b = Number.parseFloat(rowB.values[id]);
+    if (Number.isNaN(a)) {
+      // Blanks and non-numeric strings to bottom
+      a = desc ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY;
+    }
+    if (Number.isNaN(b)) {
+      b = desc ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY;
+    }
+    if (a > b) return 1;
+    if (a < b) return -1;
+    return 0;
+  }
+
   return (
     <TradesTableSetup
       columns={columns}

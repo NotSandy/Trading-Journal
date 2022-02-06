@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
 import { prisma } from "../../../lib/prisma";
 import { initializeTrade } from "../../../utils/trades/utils";
-import { format, utcToZonedTime } from "date-fns-tz";
 
 export default async function handle(
   req: NextApiRequest,
@@ -17,7 +16,7 @@ export default async function handle(
   }
 }
 
-// POST /api/trade
+// POST /api/trades
 // Required fields in body: date, ticker, expiry, time, strike, strategy, quantity, entry, exit
 // Optional fields in body: exit, notes
 async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
@@ -46,7 +45,7 @@ async function handlePOST(req: NextApiRequest, res: NextApiResponse) {
   res.status(200).end();
 }
 
-// GET /api/trade
+// GET /api/trades
 async function handleGET(req: NextApiRequest, res: NextApiResponse) {
   const session = await getSession({ req });
   const data = await prisma.trade.findMany({

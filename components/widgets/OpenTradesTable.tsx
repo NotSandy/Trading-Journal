@@ -234,7 +234,7 @@ const OpenTradesTableSetup: NextPage<IOpenTradesTableSetupProps> = ({
                 </DropdownButton>
               </div>
             </div>
-            <div className="overflow-x-auto overflow-y-hidden basis-full scrollbar-thumb-neutral-700 scrollbar-track-neutral-900 scrollbar-thin rounded-t-md">
+            <div className="pb-2 overflow-x-auto overflow-y-hidden basis-full scrollbar-thumb-neutral-700 scrollbar-track-neutral-900 scrollbar-thin rounded-t-md">
               <table
                 {...getTableProps()}
                 className="w-full divide-y divide-neutral-700"
@@ -461,6 +461,7 @@ const OpenTradesTable: NextPage<IOpenTradesTableProps> = ({
       {
         Header: "Strike",
         accessor: "strike",
+        sortType: compareNumericString,
         Cell: ({ value }: { value: Number }) => {
           if (value == null) {
             return null;
@@ -510,8 +511,24 @@ const OpenTradesTable: NextPage<IOpenTradesTableProps> = ({
         ),
       },
     ],
-    []
+    [onOpenTradeTableChangeHandler]
   );
+
+  function compareNumericString(rowA: any, rowB: any, id: any, desc: any) {
+    let a = Number.parseFloat(rowA.values[id]);
+    let b = Number.parseFloat(rowB.values[id]);
+    if (Number.isNaN(a)) {
+      // Blanks and non-numeric strings to bottom
+      a = desc ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY;
+    }
+    if (Number.isNaN(b)) {
+      b = desc ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY;
+    }
+    if (a > b) return 1;
+    if (a < b) return -1;
+    return 0;
+  }
+
   return (
     <OpenTradesTableSetup
       columns={columns}

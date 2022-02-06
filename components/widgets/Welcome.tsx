@@ -1,12 +1,20 @@
 import { NextPage } from "next";
 import React from "react";
 import Image from "next/image";
+import useSWR from "swr";
+import {
+  calcTotalPnL,
+  calcTotalTrades,
+  calcWinPercentage,
+} from "../../utils/trades/utils";
+import { Trade } from "@prisma/client";
 
 interface IWelcomeProps {
   userProfilePicture: string;
+  trades: Trade[];
 }
 
-const Welcome: NextPage<IWelcomeProps> = ({ userProfilePicture }) => {
+const Welcome: NextPage<IWelcomeProps> = ({ userProfilePicture, trades }) => {
   return (
     <div className="px-2 mb-4">
       <div className="overflow-hidden rounded-md bg-neutral-800">
@@ -43,15 +51,24 @@ const Welcome: NextPage<IWelcomeProps> = ({ userProfilePicture }) => {
           </div>
           <div className="flex text-left gap-x-4 basis-full">
             <div className="flex flex-col basis-1/3">
-              <span className="font-semibold text-neutral-100">$13190</span>
+              <span className="font-semibold text-neutral-100">
+                {calcTotalPnL(trades).toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })}
+              </span>
               <span className="text-neutral-300">Profit</span>
             </div>
             <div className="flex flex-col basis-1/3">
-              <span className="font-semibold text-neutral-100">21</span>
+              <span className="font-semibold text-neutral-100">
+                {calcTotalTrades(trades)}
+              </span>
               <span className="text-neutral-300">Trades</span>
             </div>
             <div className="flex flex-col basis-1/3">
-              <span className="font-semibold text-neutral-100">78</span>
+              <span className="font-semibold text-neutral-100">
+                {calcWinPercentage(trades).toFixed(0) + " %"}
+              </span>
               <span className="text-neutral-300">Win %</span>
             </div>
           </div>

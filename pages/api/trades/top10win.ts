@@ -13,13 +13,16 @@ export default async function handle(
   }
 }
 
-// GET /api/trades/open
+// GET /api/trades/top10win
 async function handleGET(req: NextApiRequest, res: NextApiResponse) {
   const session = await getSession({ req });
   const data = await prisma.trade.findMany({
+    orderBy: {
+      pnl: "desc",
+    },
     where: {
       user: { email: session?.user?.email },
-      status: "open",
+      status: "win",
     },
   });
 

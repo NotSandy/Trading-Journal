@@ -18,7 +18,7 @@ export default async function handle(
     res.status(405).end();
   }
 }
-// GET /api/trade
+// GET /api/trades/:id
 async function handleGET(tradeID: string | string[], res: NextApiResponse) {
   try {
     const trade = await prisma.trade.findUnique({
@@ -32,7 +32,7 @@ async function handleGET(tradeID: string | string[], res: NextApiResponse) {
   }
 }
 
-// PUT /api/trade
+// PUT /api/trades/:id
 // Required fields in body: id, date, ticker, expiry, time, strike, strategy, quantity, entry, exit
 // Optional fields in body: exit, notes
 async function handlePUT(
@@ -64,7 +64,7 @@ async function handlePUT(
   res.status(200).end();
 }
 
-// DELETE /api/trade
+// DELETE /api/trades/:id
 // Required fields in body: id
 async function handleDELETE(tradeID: string | string[], res: NextApiResponse) {
   const post = await prisma.trade.delete({
