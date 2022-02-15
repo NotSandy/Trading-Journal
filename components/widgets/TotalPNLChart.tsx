@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,6 +11,23 @@ import {
   defaults,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import {
+  calcAllTimeMonthsInterval,
+  calcPastDaysInterval,
+  calcPastMonthsInterval,
+  calcPastMonthTradesMade,
+  calcPastQuarterTradesMade,
+  calcPastWeeksInterval,
+  calcPastWeekTradesMade,
+  calcPastYearTradesMade,
+  formatDates,
+  formatMonths,
+  mapTradePnLToDay,
+  mapTradePnLToMonth,
+  mapTradePnLToWeek,
+} from "../../utils/trades/utils";
+import { NextPage } from "next";
+import { Trade } from "@prisma/client";
 
 ChartJS.register(
   CategoryScale,
@@ -60,44 +77,97 @@ const options = {
   },
 };
 
-const data = {
-  labels: [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ],
-  datasets: [
-    {
-      // label: "Total PnL",
-      pointBackgroundColor: "#7AC0F8",
-      pointBorderColor: "#E8E8E8",
-      pointBorderWidth: 1,
-      pointRadius: 6,
-      hoverBackgroundColor: "#2196F3",
-      borderColor: "#8C8C8C",
-      tension: 0.35,
-      data: [65, 59, 20, 81, 56, 55, 40, 45, 67, 100, -10, 77],
-    },
-  ],
-};
+interface ITotalPNLChartProps {
+  trades: Trade[];
+}
 
-const TotalPNLChart = () => {
+const TotalPNLChart: NextPage<ITotalPNLChartProps> = ({ trades }) => {
+  const pastWeekTradesMade: Trade[] = calcPastWeekTradesMade(trades);
+  const pastWeekDates = calcPastDaysInterval(new Date(), 6);
+  const pastMonthTradesMade: Trade[] = calcPastMonthTradesMade(trades);
+  const pastMonthDates = calcPastDaysInterval(new Date(), 29);
+  const pastQuarterTradesMade: Trade[] = calcPastQuarterTradesMade(trades);
+  const pastQuarterWeeks = calcPastWeeksInterval(new Date(), 89);
+  const pastYearTradesMade: Trade[] = calcPastYearTradesMade(trades);
+  const pastYearMonths = calcPastMonthsInterval(new Date(), 335);
+  const allTimeMonths = calcAllTimeMonthsInterval(new Date(), trades[0].date);
+
+  const [dateRange, setDateRange] = useState("Week");
+  const [labels, setLabels] = useState(formatDates(pastWeekDates));
+  const [pnlData, setPnlData] = useState(
+    mapTradePnLToDay(pastWeekDates, pastWeekTradesMade)
+  );
+
+  const onChangeDateRangeHandler = (value: string) => {
+    setDateRange(value);
+    switch (value) {
+      case "Week":
+        setLabels(formatDates(pastWeekDates));
+        setPnlData(mapTradePnLToDay(pastWeekDates, pastWeekTradesMade));
+        break;
+      case "Month":
+        setLabels(formatDates(pastMonthDates));
+        setPnlData(mapTradePnLToDay(pastMonthDates, pastMonthTradesMade));
+        break;
+      case "Quarter":
+        setLabels(formatDates(pastQuarterWeeks));
+        setPnlData(mapTradePnLToWeek(pastQuarterWeeks, pastQuarterTradesMade));
+        break;
+      case "Year":
+        setLabels(formatMonths(pastYearMonths));
+        setPnlData(mapTradePnLToMonth(pastYearMonths, pastYearTradesMade));
+        break;
+      case "All":
+        setLabels(formatMonths(allTimeMonths));
+        setPnlData(mapTradePnLToMonth(allTimeMonths, trades));
+        break;
+      default:
+        setLabels(formatDates(pastWeekDates));
+        setPnlData(mapTradePnLToDay(pastWeekDates, pastWeekTradesMade));
+    }
+  };
+
+  const data = {
+    labels,
+    datasets: [
+      {
+        // label: "Total PnL",
+        pointBackgroundColor: "#7AC0F8",
+        pointBorderColor: "#E8E8E8",
+        pointBorderWidth: 1,
+        pointRadius: 6,
+        hoverBackgroundColor: "#2196F3",
+        borderColor: "#8C8C8C",
+        tension: 0.35,
+        data: pnlData,
+      },
+    ],
+  };
+
   return (
     <div className="px-2 mb-4">
       <div className="rounded-md bg-neutral-800">
         <div className="flex flex-wrap items-center justify-center p-4 gap-y-4">
           <div className="basis-full">
-            <div className="text-lg font-bold text-neutral-100">
-              <span>Total PnL Chart</span>
+            <div className="flex justify-between">
+              <span className="text-lg font-bold text-neutral-100">
+                Total PnL
+              </span>
+              <label className="flex flex-col space-y-2">
+                <select
+                  className="block w-full capitalize transition duration-500 border-0 rounded-md shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 bg-neutral-900 text-neutral-100"
+                  onChange={(e) => {
+                    onChangeDateRangeHandler(e.target.value);
+                  }}
+                  value={dateRange}
+                >
+                  <option>Week</option>
+                  <option>Month</option>
+                  <option>Quarter</option>
+                  <option>Year</option>
+                  <option>All</option>
+                </select>
+              </label>
             </div>
           </div>
           <div className="h-96 basis-full">

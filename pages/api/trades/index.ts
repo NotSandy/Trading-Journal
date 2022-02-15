@@ -52,6 +52,9 @@ async function handleGET(req: NextApiRequest, res: NextApiResponse) {
     where: {
       user: { email: session?.user?.email },
     },
+    orderBy: {
+      date: "asc",
+    },
   });
 
   const trades = JSON.stringify(data);

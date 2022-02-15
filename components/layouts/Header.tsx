@@ -38,7 +38,7 @@ const Header: NextPage<Props> = ({ openNav }) => {
         </div>
         <div className="flex">
           <div className="flex space-x-1">
-            <HeaderItem Icon={TranslateIcon}>
+            {/* <HeaderItem Icon={TranslateIcon}>
               <HeaderDropdownMenu>
                 <HeaderDropdownMenuItem
                   title="Test"
@@ -46,7 +46,7 @@ const Header: NextPage<Props> = ({ openNav }) => {
                   url="/"
                 ></HeaderDropdownMenuItem>
               </HeaderDropdownMenu>
-            </HeaderItem>
+            </HeaderItem> */}
             <div className="relative">
               <Menu>
                 <Menu.Button className="flex items-center justify-center h-16 pr-4 space-x-2 transition duration-200 cursor-pointer hover:text-neutral-100 active:text-primary-100">

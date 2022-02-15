@@ -10,7 +10,6 @@ import {
   CurrencyDollarIcon,
 } from "@heroicons/react/outline";
 import TradesMadeGraph from "../components/widgets/TradesMadeChart";
-import MonthlyPNLChart from "../components/widgets/MonthlyPNLChart";
 import PNLChart from "../components/widgets/TotalPNLChart";
 import { prisma } from "../lib/prisma";
 import TopTrades from "../components/widgets/TopTrades";
@@ -20,11 +19,14 @@ import {
   calcAverageProfit,
   calcAverageProfitPercentage,
 } from "../utils/trades/utils";
+import QuickView from "../components/widgets/QuickView";
 
 const Dashboard = (props: any) => {
   const { data: session, status } = useSession();
   const [openTrades, setOpenTrades] = useState(JSON.parse(props.openTrades));
   const [trades, setTrades] = useState(JSON.parse(props.trades));
+  const [top10Win, setTop10Win] = useState(JSON.parse(props.top10Win));
+  const [top10Loss, setTop10Loss] = useState(JSON.parse(props.top10Loss));
 
   const tradesChangeHandler = () => {
     fetch("/api/trades/open/")
@@ -33,6 +35,12 @@ const Dashboard = (props: any) => {
     fetch("/api/trades/")
       .then((res) => res.json())
       .then((res) => setTrades(res));
+    fetch("/api/trades/top10win")
+      .then((res) => res.json())
+      .then((res) => setTop10Win(res));
+    fetch("/api/trades/top10loss")
+      .then((res) => res.json())
+      .then((res) => setTop10Loss(res));
   };
 
   if (status === "loading") {
@@ -49,7 +57,7 @@ const Dashboard = (props: any) => {
               userProfilePicture={`${session?.user?.image}`}
               trades={trades}
             />
-            <MonthlyPNLChart></MonthlyPNLChart>
+            <QuickView trades={trades}></QuickView>
           </div>
           <div className="flex-col basis-full lg:basis-2/3">
             <div className="flex flex-wrap">
@@ -82,13 +90,13 @@ const Dashboard = (props: any) => {
               </div>
             </div>
             <div className="basis-full">
-              <TradesMadeGraph></TradesMadeGraph>
+              <TradesMadeGraph trades={trades}></TradesMadeGraph>
             </div>
           </div>
         </div>
         <div className="flex">
           <div className="flex-col basis-full">
-            <PNLChart></PNLChart>
+            <PNLChart trades={trades}></PNLChart>
           </div>
         </div>
         <div className="flex flex-wrap lg:flex-nowrap">
@@ -99,7 +107,7 @@ const Dashboard = (props: any) => {
             ></OpenTradesTable>
           </div>
           <div className="flex-col basis-full lg:basis-1/2">
-            <TopTrades></TopTrades>
+            <TopTrades winTrades={top10Win} lossTrades={top10Loss}></TopTrades>
           </div>
         </div>
       </div>
@@ -137,11 +145,40 @@ export async function getServerSideProps(context: any) {
     where: {
       user: { email: session?.user?.email },
     },
+    orderBy: {
+      date: "asc",
+    },
   });
 
   const trades = JSON.stringify(data2);
 
+  const data3 = await prisma.trade.findMany({
+    where: {
+      user: { email: session?.user?.email },
+      status: "win",
+    },
+    orderBy: {
+      pnl: "desc",
+    },
+    take: 10,
+  });
+
+  const top10Win = JSON.stringify(data3);
+
+  const data4 = await prisma.trade.findMany({
+    where: {
+      user: { email: session?.user?.email },
+      status: "loss",
+    },
+    orderBy: {
+      pnl: "asc",
+    },
+    take: 10,
+  });
+
+  const top10Loss = JSON.stringify(data4);
+
   return {
-    props: { session, openTrades, trades },
+    props: { session, openTrades, trades, top10Win, top10Loss },
   };
 }

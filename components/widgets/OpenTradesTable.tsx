@@ -26,6 +26,7 @@ import { StatusBadge } from "../ui/Badge";
 import AddTradeModal from "../trades/AddTradeModal";
 import { Button, DropdownButton, PageButton } from "../ui/Button";
 import { format, utcToZonedTime } from "date-fns-tz";
+import { CSVLink } from "react-csv";
 
 function GlobalFilter({
   preGlobalFilteredRows,
@@ -232,6 +233,9 @@ const OpenTradesTableSetup: NextPage<IOpenTradesTableSetupProps> = ({
                     }
                   })}
                 </DropdownButton>
+                <Button type="button" className="whitespace-nowrap">
+                  <CSVLink data={data}>Export</CSVLink>
+                </Button>
               </div>
             </div>
             <div className="pb-2 overflow-x-auto overflow-y-hidden basis-full scrollbar-thumb-neutral-700 scrollbar-track-neutral-900 scrollbar-thin rounded-t-md">

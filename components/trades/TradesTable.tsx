@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import React, { MutableRefObject, useState } from "react";
+import React, { MutableRefObject } from "react";
 import {
   useTable,
   useGlobalFilter,
@@ -27,6 +27,7 @@ import AddTradeModal from "./AddTradeModal";
 import { Button, DropdownButton, PageButton } from "../ui/Button";
 import Image from "next/image";
 import { format, utcToZonedTime } from "date-fns-tz";
+import { CSVLink } from "react-csv";
 
 function GlobalFilter({
   preGlobalFilteredRows,
@@ -256,6 +257,9 @@ const TradesTableSetup: NextPage<ITradesTableSetupProps> = ({
                   })}
                 </DropdownButton>
               </div>
+              <Button type="button" className="whitespace-nowrap">
+                <CSVLink data={data}>Export</CSVLink>
+              </Button>
             </div>
           </div>
           <div className="pb-2 overflow-x-auto overflow-y-hidden scrollbar-thumb-neutral-700 scrollbar-track-neutral-900 scrollbar-thin rounded-t-md">
@@ -572,7 +576,6 @@ const TradesTable: NextPage<ITradesTableProps> = ({
         accessor: "pnl",
         sortType: compareNumericString,
         Cell: ({ value }: { value: Number }) => {
-          console.log(value);
           const statusColor = (value: Number) => {
             if (value < 0) {
               return "text-danger-500";

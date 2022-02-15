@@ -1,7 +1,6 @@
 import { NextPage } from "next";
 import React from "react";
 import Image from "next/image";
-import useSWR from "swr";
 import {
   calcTotalPnL,
   calcTotalTrades,
@@ -48,6 +47,11 @@ const Welcome: NextPage<IWelcomeProps> = ({ userProfilePicture, trades }) => {
                 Rank: <span className="text-neutral-300">Novice Trader</span>
               </span>
             </div> */}
+            <div className="-mt-8 text-neutral-100">
+              <span className="text-lg font-bold text-neutral-100">
+                Lifetime Stats
+              </span>
+            </div>
           </div>
           <div className="flex text-left gap-x-4 basis-full">
             <div className="flex flex-col basis-1/3">
